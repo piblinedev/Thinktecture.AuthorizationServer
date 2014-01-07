@@ -21,7 +21,7 @@ namespace Thinktecture.AuthorizationServer.WebHost
                 "~/Scripts/jquery-{version}.js",
                 "~/Scripts/knockout-{version}.js",
                 "~/Scripts/knockout.mapping-latest.js",
-                //"~/Scripts/knockout-es5.js",
+                "~/Scripts/knockout-es5.js",
                 "~/Scripts/bootstrap.js",
                 "~/Scripts/app/as.js"));
 

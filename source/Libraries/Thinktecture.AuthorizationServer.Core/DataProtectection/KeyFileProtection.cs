@@ -12,8 +12,8 @@ namespace Thinktecture.AuthorizationServer
     {
         public class KeyFile
         {
-            public string encryptKey;
-            public string signKey;
+            public string EncryptKey;
+            public string SignKey;
         }
 
         public KeyFileProtection(string filePath)
@@ -31,8 +31,8 @@ namespace Thinktecture.AuthorizationServer
             {
                 var json = File.ReadAllText(path);
                 var keys = Newtonsoft.Json.JsonConvert.DeserializeObject<KeyFile>(json);
-                encrKey = keys.encryptKey;
-                signKey = keys.signKey;
+                encrKey = keys.EncryptKey;
+                signKey = keys.SignKey;
             }
             else
             {
@@ -42,9 +42,9 @@ namespace Thinktecture.AuthorizationServer
 
         private static void CreateKeyFile(string path, out string encrKey, out string signKey)
         {
-            KeyProtection.CreateKeys(out encrKey, out signKey);
+            CreateKeys(out encrKey, out signKey);
 
-            var keys = new KeyFile { encryptKey = encrKey, signKey = signKey };
+            var keys = new KeyFile { EncryptKey = encrKey, SignKey = signKey };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(keys);
             File.WriteAllText(path, json);
         }

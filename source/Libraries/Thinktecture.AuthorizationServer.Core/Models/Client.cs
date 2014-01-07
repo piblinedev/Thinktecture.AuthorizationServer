@@ -39,39 +39,39 @@ namespace Thinktecture.AuthorizationServer.Models
 
         public void SetSharedSecret(string password)
         {
-            this.AuthenticationMethod = ClientAuthenticationMethod.SharedSecret;
+            AuthenticationMethod = ClientAuthenticationMethod.SharedSecret;
 
             var bytes = System.Text.Encoding.UTF8.GetBytes(password);
             bytes = DataProtectection.Instance.Protect(bytes);
-            this.ClientSecret = Convert.ToBase64String(bytes);
+            ClientSecret = Convert.ToBase64String(bytes);
         }
         public string GetSharedSecret()
         {
-            if (this.AuthenticationMethod != ClientAuthenticationMethod.SharedSecret) return null;
+            if (AuthenticationMethod != ClientAuthenticationMethod.SharedSecret) return null;
 
-            var bytes = Convert.FromBase64String(this.ClientSecret);
+            var bytes = Convert.FromBase64String(ClientSecret);
             bytes = DataProtectection.Instance.Unprotect(bytes);
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
         public bool ValidateSharedSecret(string password)
         {
-            if (this.AuthenticationMethod != ClientAuthenticationMethod.SharedSecret) return false;
+            if (AuthenticationMethod != ClientAuthenticationMethod.SharedSecret) return false;
 
             var val = GetSharedSecret();
-            return Thinktecture.IdentityModel.ObfuscatingComparer.IsEqual(password, val);
+            return IdentityModel.ObfuscatingComparer.IsEqual(password, val);
         }
         
         public void SetCertificateThumbprint(string thumbprint)
         {
-            this.AuthenticationMethod = ClientAuthenticationMethod.CertificateThumbprint;
-            this.ClientSecret = thumbprint;
+            AuthenticationMethod = ClientAuthenticationMethod.CertificateThumbprint;
+            ClientSecret = thumbprint;
         }
 
         public bool ValidateCertificateThumbprint(string thumbprint)
         {
-            if (this.AuthenticationMethod != ClientAuthenticationMethod.CertificateThumbprint) return false;
-            return thumbprint == this.ClientSecret;
+            if (AuthenticationMethod != ClientAuthenticationMethod.CertificateThumbprint) return false;
+            return thumbprint == ClientSecret;
         }
     }
 }

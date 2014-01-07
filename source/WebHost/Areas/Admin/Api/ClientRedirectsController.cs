@@ -10,6 +10,7 @@ using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models;
+using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -18,17 +19,17 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class ClientRedirectsController : ApiController
     {
-        IAuthorizationServerAdministration config;
+        readonly IAuthorizationServerAdministration _config;
 
         public ClientRedirectsController(IAuthorizationServerAdministration config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public HttpResponseMessage Get(string id)
         {
             var query =
-                from item in config.Clients.All
+                from item in _config.Clients.All
                 where item.ClientId == id
                 from uri in item.RedirectUris
                 select new
@@ -41,14 +42,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
         public HttpResponseMessage Delete(int id)
         {
             var query =
-                from r in config.ClientRedirects.All
+                from r in _config.ClientRedirects.All
                 where r.ID == id
                 select r;
             var item = query.SingleOrDefault();
             if (item != null)
             {
-                this.config.ClientRedirects.Remove(item);
-                this.config.SaveChanges();
+                _config.ClientRedirects.Remove(item);
+                _config.SaveChanges();
             }
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }
@@ -60,7 +61,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            var client = this.config.Clients.All.SingleOrDefault(x => x.ClientId == id);
+            var client = _config.Clients.All.SingleOrDefault(x => x.ClientId == id);
             if (client == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -68,7 +69,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
 
             var item = new ClientRedirectUri { Uri = model.Uri, Description = model.Description };
             client.RedirectUris.Add(item);
-            this.config.SaveChanges();
+            _config.SaveChanges();
 
             var response = Request.CreateResponse(HttpStatusCode.OK, item);
             return response;

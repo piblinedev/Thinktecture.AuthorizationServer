@@ -7,7 +7,7 @@ using System;
 using System.Security.Claims;
 using Thinktecture.AuthorizationServer.Interfaces;
 
-namespace Thinktecture.AuthorizationServer.WebHost
+namespace Thinktecture.AuthorizationServer.WebHost.Security
 {
     public class NameIdToSubjectClaimsTransformer : ClaimsTransformerBase
     {

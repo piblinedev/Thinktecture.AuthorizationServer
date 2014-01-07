@@ -12,6 +12,7 @@ using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models;
+using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -20,16 +21,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class X509KeysController : ApiController
     {
-        IAuthorizationServerAdministration config;
+        readonly IAuthorizationServerAdministration _config;
 
         public X509KeysController(IAuthorizationServerAdministration config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public HttpResponseMessage Get(int id)
         {
-            var item = config.Keys.All.SingleOrDefault(x => x.ID == id) as X509CertificateReference;
+            var item = _config.Keys.All.SingleOrDefault(x => x.ID == id) as X509CertificateReference;
             if (item == null) return Request.CreateResponse(HttpStatusCode.NotFound);
             return Request.CreateResponse(HttpStatusCode.OK, new X509KeyModel(item));
         }
@@ -41,18 +42,20 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            if (this.config.Keys.All.Any(x => x.Name == model.Name))
+            if (_config.Keys.All.Any(x => x.Name == model.Name))
             {
                 ModelState.AddModelError("", "That Name is already in use.");
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            var key = new X509CertificateReference();
-            key.Name = model.Name;
-            key.StoreName = System.Security.Cryptography.X509Certificates.StoreName.My;
-            key.Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine;
-            key.FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint;
-            key.FindValue = model.Thumbprint;
+            var key = new X509CertificateReference
+                {
+                    Name = model.Name,
+                    StoreName = System.Security.Cryptography.X509Certificates.StoreName.My,
+                    Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine,
+                    FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint,
+                    FindValue = model.Thumbprint
+                };
 
             var cert = key.Certificate;
             if (cert == null)
@@ -86,8 +89,8 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 }
             }
 
-            this.config.Keys.Add(key);
-            this.config.SaveChanges();
+            _config.Keys.Add(key);
+            _config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.OK, new X509KeyModel(key));
         }
@@ -99,10 +102,10 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            var key = this.config.Keys.All.SingleOrDefault(x => x.ID == id) as X509CertificateReference;
+            var key = _config.Keys.All.SingleOrDefault(x => x.ID == id) as X509CertificateReference;
             if (key == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
-            if (this.config.Keys.All.Any(x => x.Name == model.Name && x.ID != id))
+            if (_config.Keys.All.Any(x => x.Name == model.Name && x.ID != id))
             {
                 ModelState.AddModelError("", "That Name is already in use.");
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
@@ -146,7 +149,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 }
             }
 
-            this.config.SaveChanges();
+            _config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }

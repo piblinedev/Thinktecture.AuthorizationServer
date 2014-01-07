@@ -8,7 +8,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Mvc;
 
-namespace Thinktecture.AuthorizationServer.WebHost
+namespace Thinktecture.AuthorizationServer.WebHost.Security
 {
     public class ValidateHttpAntiForgeryTokenAttribute : AuthorizationFilterAttribute
     {

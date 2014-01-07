@@ -11,14 +11,14 @@ using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 
-namespace Thinktecture.AuthorizationServer.OAuth2
+namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
 {
     public class TokenController : ApiController
     {
-        IResourceOwnerCredentialValidation _rocv;
-        IAuthorizationServerConfiguration _config;
-        IStoredGrantManager _handleManager;
-        IAssertionGrantValidation _assertionGrantValidator;
+        readonly IResourceOwnerCredentialValidation _rocv;
+        readonly IAuthorizationServerConfiguration _config;
+        readonly IStoredGrantManager _handleManager;
+        readonly IAssertionGrantValidation _assertionGrantValidator;
 
         public TokenController(
             IResourceOwnerCredentialValidation rocv, 
@@ -85,7 +85,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
             catch (Exception ex)
             {
-                Tracing.Error("Unhandled exception in assertion grant handler: " + ex.ToString());
+                Tracing.Error("Unhandled exception in assertion grant handler: " + ex);
                 throw;
             }
 
@@ -140,13 +140,13 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
             catch (Exception ex)
             {
-                Tracing.Error("Resource owner credential validation failed: " + ex.ToString());
+                Tracing.Error("Resource owner credential validation failed: " + ex);
                 throw;
             }
 
             if (principal != null && principal.Identity.IsAuthenticated)
             {
-                var sts = new TokenService(this._config.GlobalConfiguration);
+                var sts = new TokenService(_config.GlobalConfiguration);
                 var response = sts.CreateTokenResponse(validatedRequest, principal);
 
                 // check if refresh token is enabled for the client
@@ -166,10 +166,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 
                 return Request.CreateTokenResponse(response);
             }
-            else
-            {
-                return Request.CreateOAuthErrorResponse(OAuthConstants.Errors.InvalidGrant);
-            }
+
+            return Request.CreateOAuthErrorResponse(OAuthConstants.Errors.InvalidGrant);
         }
     }
 }

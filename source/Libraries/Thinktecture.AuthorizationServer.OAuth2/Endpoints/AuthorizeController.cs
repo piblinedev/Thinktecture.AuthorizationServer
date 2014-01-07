@@ -11,15 +11,15 @@ using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.IdentityModel.Web.Mvc;
 
-namespace Thinktecture.AuthorizationServer.OAuth2
+namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
 {
     [Authorize]
     [FrameOptions(FrameOptions.Deny)]
     [OutputCache(NoStore = true, Location = System.Web.UI.OutputCacheLocation.None)]
     public class AuthorizeController : Controller
     {
-        IStoredGrantManager _handleManager;
-        IAuthorizationServerConfiguration _config;
+        readonly IStoredGrantManager _handleManager;
+        readonly IAuthorizationServerConfiguration _config;
 
         public AuthorizeController(IStoredGrantManager handleManager, IAuthorizationServerConfiguration config)
         {
@@ -151,14 +151,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     rememberDuration != null &&
                     validatedRequest.Client.Flow == OAuthFlow.Code)
                 {
-                    if (rememberDuration == -1)
-                    {
-                        validatedRequest.RequestedRefreshTokenExpiration = DateTime.UtcNow.AddYears(50);
-                    }
-                    else
-                    {
-                        validatedRequest.RequestedRefreshTokenExpiration = DateTime.UtcNow.AddHours(rememberDuration.Value);
-                    }
+                    validatedRequest.RequestedRefreshTokenExpiration = rememberDuration == -1 ? DateTime.UtcNow.AddYears(50) : DateTime.UtcNow.AddHours(rememberDuration.Value);
 
                     Tracing.Information("Selected refresh token lifetime in hours: " + rememberDuration);
                 }
@@ -221,7 +214,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
         {
             Tracing.Information("Performing implict grant");
 
-            var sts = new TokenService(this._config.GlobalConfiguration);
+            var sts = new TokenService(_config.GlobalConfiguration);
             var response = sts.CreateTokenResponse(validatedRequest, ClaimsPrincipal.Current);
 
             var tokenString = string.Format("access_token={0}&token_type={1}&expires_in={2}",

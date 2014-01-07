@@ -4,12 +4,14 @@
  */
 
 using System.IdentityModel.Services;
+using System.IdentityModel.Services.Configuration;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Thinktecture.AuthorizationServer.Interfaces;
+using Thinktecture.AuthorizationServer.WebHost.Security;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
@@ -17,6 +19,7 @@ namespace Thinktecture.AuthorizationServer.WebHost
     {
         protected void Application_Start()
         {
+            AutofacConfig.Configure();
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);
@@ -24,14 +27,13 @@ namespace Thinktecture.AuthorizationServer.WebHost
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             
-            AutofacConfig.Configure();
             DataProtectionConfig.Configure();
 
             AntiForgeryConfig.UniqueClaimTypeIdentifier = Constants.ClaimTypes.Subject;
             FederatedAuthentication.FederationConfigurationCreated += FederatedAuthentication_FederationConfigurationCreated;
         }
 
-        void FederatedAuthentication_FederationConfigurationCreated(object sender, System.IdentityModel.Services.Configuration.FederationConfigurationCreatedEventArgs e)
+        void FederatedAuthentication_FederationConfigurationCreated(object sender, FederationConfigurationCreatedEventArgs e)
         {
             var svc = DependencyResolver.Current.GetService<IAuthorizationServerAdministratorsService>();
 

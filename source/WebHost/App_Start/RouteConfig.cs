@@ -14,28 +14,17 @@ namespace Thinktecture.AuthorizationServer.WebHost
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
-                name: "OAuth2 Authorize Endpoint",
-                url: "{appName}/oauth/authorize",
-                defaults: new
+            routes.MapRoute("OAuth2 Authorize Endpoint", "{appName}/oauth/authorize", new
                 {
                     controller = "Authorize",
                     action = "Index"
-                }
-            );
+                });
 
-            routes.MapRoute(
-                name: "Signout",
-                url: "Signout",
-                defaults: new { controller = "Account", action = "SignOut" },
-                namespaces: new[] { "Thinktecture.AuthorizationServer.WebHost.Controllers" }
-            );
-            routes.MapRoute(
-                name: "Home",
-                url: "{action}",
-                defaults: new { controller = "Home", action = "Index" },
-                namespaces: new[] { "Thinktecture.AuthorizationServer.WebHost.Controllers" }
-            );
+            routes.MapRoute("Signout", "Signout", new {controller = "Account", action = "SignOut"},
+                            new[] {"Thinktecture.AuthorizationServer.WebHost.Controllers"});
+
+            routes.MapRoute("Home", "{action}", new {controller = "Home", action = "Index"},
+                            new[] {"Thinktecture.AuthorizationServer.WebHost.Controllers"});
         }
     }
 }

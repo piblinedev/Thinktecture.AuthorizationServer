@@ -6,7 +6,7 @@
 using System.Linq;
 using System.Security.Claims;
 
-namespace Thinktecture.AuthorizationServer.WebHost
+namespace Thinktecture.AuthorizationServer.WebHost.Security
 {
     public class AuthorizationManager : ClaimsAuthorizationManager
     {

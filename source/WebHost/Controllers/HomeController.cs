@@ -11,10 +11,11 @@ namespace Thinktecture.AuthorizationServer.WebHost.Controllers
 {
     public class HomeController : Controller
     {
-        IAuthorizationServerConfiguration config;
+        private readonly IAuthorizationServerConfiguration _config;
+
         public HomeController(IAuthorizationServerConfiguration config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public ActionResult Index()
@@ -25,7 +26,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Controllers
         [ChildActionOnly]
         public ActionResult Banner()
         {
-            var global = config.GlobalConfiguration;
+            var global = _config.GlobalConfiguration;
             if (global != null)
             {
                 ViewData["ServerName"] = global.AuthorizationServerName;
@@ -42,9 +43,11 @@ namespace Thinktecture.AuthorizationServer.WebHost.Controllers
         public JavaScriptResult Urls()
         {
             var path = Request.ApplicationPath;
-            if (!path.EndsWith("/")) path += "/";
+            if (!path.EndsWith("/"))
+                path += "/";
+
             path += "api/";
-            
+
             var js = String.Format("if(window.as){{window.as.Service.baseUrl='{0}';}}", path);
             return base.JavaScript(js);
         }

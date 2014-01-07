@@ -9,16 +9,16 @@ using System.Security.Claims;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.IdentityModel;
 
-namespace Thinktecture.AuthorizationServer.WebHost
+namespace Thinktecture.AuthorizationServer.WebHost.Security
 {
     public abstract class ClaimsTransformerBase : ClaimsAuthenticationManager
     {
-        protected IAuthorizationServerAdministratorsService service;
+        protected IAuthorizationServerAdministratorsService Service;
         protected abstract string GetSubject(ClaimsPrincipal principal);
-       
-        public ClaimsTransformerBase(IAuthorizationServerAdministratorsService svc)
+
+        protected ClaimsTransformerBase(IAuthorizationServerAdministratorsService svc)
         {
-            this.service = svc;
+            Service = svc;
         }
 
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
@@ -33,7 +33,7 @@ namespace Thinktecture.AuthorizationServer.WebHost
 
         protected virtual IEnumerable<Claim> AddInternalClaims(string subject)
         {
-            var adminNameIDs = this.service.GetAdministratorNameIDs();
+            var adminNameIDs = Service.GetAdministratorNameIDs();
             var result = new List<Claim>();
 
             if (adminNameIDs.Any(a => a.Equals(subject, System.StringComparison.InvariantCultureIgnoreCase)))

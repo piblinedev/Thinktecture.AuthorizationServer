@@ -17,11 +17,11 @@ namespace Thinktecture.AuthorizationServer
 {
     public class TokenService
     {
-        GlobalConfiguration globalConfiguration;
+        readonly GlobalConfiguration _globalConfiguration;
 
         public TokenService(GlobalConfiguration globalConfiguration)
         {
-            this.globalConfiguration = globalConfiguration;
+            _globalConfiguration = globalConfiguration;
         }
 
         public virtual TokenResponse CreateTokenResponse(StoredGrant handle, IStoredGrantManager handleManager)
@@ -125,7 +125,7 @@ namespace Thinktecture.AuthorizationServer
         protected virtual JwtSecurityToken CreateToken(ValidatedRequest request, IEnumerable<Claim> claims)
         {
             var token = new JwtSecurityToken(
-                issuer: globalConfiguration.Issuer,
+                issuer: _globalConfiguration.Issuer,
                 audience: request.Application.Audience,
                 claims: claims,
                 lifetime: new Lifetime(DateTime.UtcNow, DateTime.UtcNow.AddMinutes(request.Application.TokenLifetime)),

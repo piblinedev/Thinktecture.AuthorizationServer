@@ -19,15 +19,17 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 {
     public class WSTrustResourceOwnerCredentialValidation : IResourceOwnerCredentialValidation
     {
-        string _address;
-        string _realm;
-        string _issuerThumbprint;
+        readonly string _address;
+        readonly string _realm;
+        readonly string _issuerThumbprint;
 
         public WSTrustResourceOwnerCredentialValidation(string address, string realm, string issuerThumbprint)
         {
             _address = address;
             _realm = realm;
             _issuerThumbprint = issuerThumbprint;
+            Tracing.InformationFormat("ResourceOwner validation  Address:{0} Realm:{1} Thumbprint:{2}", address, realm,
+                                      issuerThumbprint);
         }
 
         public ClaimsPrincipal Validate(string userName, string password)
@@ -37,8 +39,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             credentials.UserName.UserName = userName;
             credentials.UserName.Password = password;
 
-            GenericXmlSecurityToken genericToken;
-            genericToken = WSTrustClient.Issue(
+            var genericToken = WSTrustClient.Issue(
                 new EndpointAddress(_address),
                 new EndpointAddress(_realm),
                 binding,
@@ -56,11 +57,11 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 
             var handler = SecurityTokenHandlerCollection.CreateDefaultSecurityTokenHandlerCollection(config);
 
-            ClaimsPrincipal principal;
             var token = genericToken.ToSecurityToken();
-            principal = new ClaimsPrincipal(handler.ValidateToken(token));
+            var principal = new ClaimsPrincipal(handler.ValidateToken(token));
 
             Tracing.Information("Successfully requested token for user via WS-Trust");
+            Tracing.InformationFormat("Token received for user via WS-Trust {0}", token);
             return FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate("ResourceOwnerPasswordValidation", principal);
         }
     }

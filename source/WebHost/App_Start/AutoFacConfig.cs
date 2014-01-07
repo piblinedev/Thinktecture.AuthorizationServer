@@ -4,7 +4,6 @@
  */
 
 using Autofac;
-using Autofac.Configuration;
 using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using System.Web.Http;
@@ -12,10 +11,11 @@ using System.Web.Mvc;
 using Thinktecture.AuthorizationServer.EF;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.OAuth2;
+using Thinktecture.AuthorizationServer.OAuth2.Endpoints;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
-    public static class AutofacConfig
+    public class AutofacConfig
     {
         public static void Configure()
         {
@@ -30,8 +30,8 @@ namespace Thinktecture.AuthorizationServer.WebHost
             builder.RegisterType<EFAuthorizationServerAdministration>().As<IAuthorizationServerAdministration>();
             builder.RegisterType<EFAuthorizationServerAdministratorsService>().As<IAuthorizationServerAdministratorsService>();
             builder.RegisterType<AuthorizationServerContext>().InstancePerHttpRequest();
-            
-            builder.RegisterModule(new ConfigurationSettingsReader("autofac"));
+
+            builder.RegisterModule(new AutofacWebTypesModule());
 
             builder.RegisterControllers(typeof(AuthorizeController).Assembly);
             builder.RegisterControllers(typeof(AutofacConfig).Assembly);
@@ -41,7 +41,7 @@ namespace Thinktecture.AuthorizationServer.WebHost
             var container = builder.Build(); 
             
             // MVC
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container.BeginLifetimeScope()));
 
             // Web API
             var resolver = new AutofacWebApiDependencyResolver(container);
