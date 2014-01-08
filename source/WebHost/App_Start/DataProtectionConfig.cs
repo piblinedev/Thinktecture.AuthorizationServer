@@ -12,8 +12,8 @@ namespace Thinktecture.AuthorizationServer.WebHost
     {
         public static void Configure()
         {
-            ConfigureMachineKey();
-            //ConfigureLocalKey();
+            //ConfigureMachineKey();
+            ConfigureLocalKey();
         }
 
         private static void ConfigureMachineKey()

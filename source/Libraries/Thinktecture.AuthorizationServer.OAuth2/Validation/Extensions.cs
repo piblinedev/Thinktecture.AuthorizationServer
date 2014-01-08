@@ -24,7 +24,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
         public static HttpResponseMessage CreateTokenResponse(this HttpRequestMessage request, TokenResponse response)
         {
             Tracing.Information("Returning token response.");
-            return request.CreateResponse<TokenResponse>(HttpStatusCode.OK, response);
+            return request.CreateResponse(HttpStatusCode.OK, response);
         }
         
         public static ActionResult AuthorizeValidationError(this Controller controller, AuthorizeRequestValidationException exception)

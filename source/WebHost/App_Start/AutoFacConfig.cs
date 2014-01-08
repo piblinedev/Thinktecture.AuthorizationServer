@@ -20,17 +20,17 @@ namespace Thinktecture.AuthorizationServer.WebHost
         public static void Configure()
         {
             var builder = new ContainerBuilder();
-
             builder.RegisterType<EFStoredGrantManager>().As<IStoredGrantManager>();
-
-            //builder.RegisterType<Thinktecture.Samples.AssertionGrantValidator>().As<IAssertionGrantValidation>();
-            builder.RegisterType<DefaultAssertionGrantValidator>().As<IAssertionGrantValidation>();
-
             builder.RegisterType<EFAuthorizationServerConfiguration>().As<IAuthorizationServerConfiguration>();
             builder.RegisterType<EFAuthorizationServerAdministration>().As<IAuthorizationServerAdministration>();
             builder.RegisterType<EFAuthorizationServerAdministratorsService>().As<IAuthorizationServerAdministratorsService>();
-            builder.RegisterType<AuthorizationServerContext>().InstancePerHttpRequest();
 
+            //builder.RegisterType<Thinktecture.Samples.AssertionGrantValidator>().As<IAssertionGrantValidation>();
+            
+            builder.RegisterType<DefaultAssertionGrantValidator>().As<IAssertionGrantValidation>();
+            builder.RegisterType<AuthorizationServerContext>().InstancePerHttpRequest();
+            builder.RegisterType<WSTrustResourceOwnerCredentialValidation>().As<IResourceOwnerCredentialValidation>();
+            
             builder.RegisterModule(new AutofacWebTypesModule());
 
             builder.RegisterControllers(typeof(AuthorizeController).Assembly);
@@ -38,10 +38,10 @@ namespace Thinktecture.AuthorizationServer.WebHost
             builder.RegisterApiControllers(typeof(TokenController).Assembly);
             builder.RegisterApiControllers(typeof(AutofacConfig).Assembly);
 
-            var container = builder.Build(); 
-            
+            var container = builder.Build();
+
             // MVC
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container.BeginLifetimeScope()));
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             // Web API
             var resolver = new AutofacWebApiDependencyResolver(container);

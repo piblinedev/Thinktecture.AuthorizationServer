@@ -15,13 +15,17 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
 {
     public class TokenController : ApiController
     {
-        readonly IResourceOwnerCredentialValidation _rocv;
-        readonly IAuthorizationServerConfiguration _config;
-        readonly IStoredGrantManager _handleManager;
-        readonly IAssertionGrantValidation _assertionGrantValidator;
+        private readonly IResourceOwnerCredentialValidation _rocv;
+        private readonly IAuthorizationServerConfiguration _config;
+        private readonly IStoredGrantManager _handleManager;
+        private readonly IAssertionGrantValidation _assertionGrantValidator;
+
+        protected TokenController()
+        {
+        }
 
         public TokenController(
-            IResourceOwnerCredentialValidation rocv, 
+            IResourceOwnerCredentialValidation rocv,
             IAuthorizationServerConfiguration config,
             IStoredGrantManager handleManager,
             IAssertionGrantValidation assertionGrantValidator)
@@ -48,7 +52,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             ValidatedRequest validatedRequest;
             try
             {
-                validatedRequest = new TokenRequestValidator(_handleManager).Validate(application, request, ClaimsPrincipal.Current);
+                validatedRequest = new TokenRequestValidator(_handleManager).Validate(application, request,
+                                                                                      ClaimsPrincipal.Current);
             }
             catch (TokenRequestValidationException ex)
             {

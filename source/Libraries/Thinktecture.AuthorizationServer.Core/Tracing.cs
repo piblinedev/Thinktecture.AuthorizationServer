@@ -11,7 +11,7 @@ namespace Thinktecture.AuthorizationServer
 {
     public static class Tracing
     {
-        private static TraceSource _ts = new TraceSource("Thinktecture.AuthorizationServer");
+        private static readonly TraceSource _Ts = new TraceSource("Thinktecture.AuthorizationServer");
 
         [DebuggerStepThrough]
         public static void Start(string message)
@@ -82,7 +82,7 @@ namespace Thinktecture.AuthorizationServer
         [DebuggerStepThrough]
         public static void Transfer(string message, Guid activity)
         {
-            _ts.TraceTransfer(0, message, activity);
+            _Ts.TraceTransfer(0, message, activity);
         }
 
         [DebuggerStepThrough]
@@ -100,7 +100,7 @@ namespace Thinktecture.AuthorizationServer
                 Trace.CorrelationManager.ActivityId = Guid.NewGuid();
             }
 
-            _ts.TraceEvent(type, 0, message);
+            _Ts.TraceEvent(type, 0, message);
         }
     }
 }

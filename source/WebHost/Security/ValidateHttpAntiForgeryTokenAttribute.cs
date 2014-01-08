@@ -14,7 +14,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Security
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            HttpRequestMessage request = actionContext.ControllerContext.Request;
+            var request = actionContext.ControllerContext.Request;
 
             try
             {

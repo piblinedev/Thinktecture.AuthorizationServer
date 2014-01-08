@@ -21,7 +21,7 @@ namespace Thinktecture.AuthorizationServer.WebHost
 
             try
             {
-                var db = DependencyResolver.Current.GetService<Thinktecture.AuthorizationServer.EF.AuthorizationServerContext>();
+                var db = DependencyResolver.Current.GetService<AuthorizationServerContext>();
 
                 var resourceOwnerClient = db.Clients.Find("roclient");
                 var CodeClient = db.Clients.Find("codeclient");

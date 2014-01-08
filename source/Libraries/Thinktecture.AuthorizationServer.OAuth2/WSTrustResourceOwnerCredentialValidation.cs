@@ -23,13 +23,15 @@ namespace Thinktecture.AuthorizationServer.OAuth2
         readonly string _realm;
         readonly string _issuerThumbprint;
 
+        //Added to prevent AutoFac from throwing an exception during dependency resolution
+        public WSTrustResourceOwnerCredentialValidation(){}
+
         public WSTrustResourceOwnerCredentialValidation(string address, string realm, string issuerThumbprint)
         {
             _address = address;
             _realm = realm;
             _issuerThumbprint = issuerThumbprint;
-            Tracing.InformationFormat("ResourceOwner validation  Address:{0} Realm:{1} Thumbprint:{2}", address, realm,
-                                      issuerThumbprint);
+            Tracing.InformationFormat("ResourceOwner validation Address:{0} Realm:{1} Thumbprint:{2}", address, realm, issuerThumbprint);
         }
 
         public ClaimsPrincipal Validate(string userName, string password)

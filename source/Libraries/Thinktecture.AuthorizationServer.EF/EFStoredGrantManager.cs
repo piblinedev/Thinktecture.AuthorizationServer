@@ -12,50 +12,43 @@ namespace Thinktecture.AuthorizationServer.EF
 {
     public class EFStoredGrantManager : IStoredGrantManager
     {
-        AuthorizationServerContext db;
+        readonly AuthorizationServerContext _db;
 
         public EFStoredGrantManager(AuthorizationServerContext db)
         {
-            this.db = db;
+            _db = db;
         }
 
-        public void Add(Models.StoredGrant grant)
+        public void Add(StoredGrant grant)
         {
-            db.StoredGrants.Add(grant);
-            db.SaveChanges();
+            _db.StoredGrants.Add(grant);
+            _db.SaveChanges();
         }
 
-        public Models.StoredGrant Get(string grantIdentifier)
+        public StoredGrant Get(string grantIdentifier)
         {
-            return db.StoredGrants.Find(grantIdentifier);
+            return _db.StoredGrants.Find(grantIdentifier);
         }
 
         public void Delete(string grantIdentifier)
         {
-            var item = db.StoredGrants.Find(grantIdentifier);
+            var item = _db.StoredGrants.Find(grantIdentifier);
             if (item != null)
             {
-                db.StoredGrants.Remove(item);
-                db.SaveChanges();
+                _db.StoredGrants.Remove(item);
+                _db.SaveChanges();
             }
         }
 
-        public Models.StoredGrant Find(string subject, Models.Client client, Models.Application application, IEnumerable<Scope> scopes, StoredGrantType type)
+        public StoredGrant Find(string subject, Client client, Application application, IEnumerable<Scope> scopes, StoredGrantType type)
         {
-            var grants = db.StoredGrants.Where(h => h.Subject == subject &&
+            var grants = _db.StoredGrants.Where(h => h.Subject == subject &&
                                                              h.Client.ClientId == client.ClientId &&
                                                              h.Application.ID == application.ID &&
                                                              h.Type == type).ToList();
 
-            foreach (var grant in grants)
-            {
-                if (grant.Scopes.ScopeEquals(scopes))
-                {
-                    return grant;
-                }
-            }
-
-            return null;
+            var tempScopes = scopes.ToArray();
+            return grants.FirstOrDefault(grant => grant.Scopes.ScopeEquals(tempScopes));
         }
     }
 }
