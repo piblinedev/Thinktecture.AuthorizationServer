@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultAssertionGrantValidator.cs" />
+    <Compile Include="DefaultOAuth2CredentialAuthorizationResource.cs" />
     <Compile Include="Validation\AuthorizeRequestResourceOwnerException.cs" />
     <Compile Include="Validation\AuthorizeRequestValidationException.cs" />
     <Compile Include="Endpoints\AuthorizeController.cs" />

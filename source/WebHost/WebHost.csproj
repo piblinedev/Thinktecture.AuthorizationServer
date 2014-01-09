@@ -357,9 +357,6 @@
     <Content Include="Configuration\tracing.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Configuration\autofac.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Areas\Admin\Views\Web.config" />
     <Content Include="Scripts\app\as.js" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -30,5 +30,27 @@ namespace Thinktecture.AuthorizationServer.WebHost
                 return ConfigurationManager.AppSettings["authz:EnableSelfService"].Equals("true");
             }
         }
+
+        public static string CredentialResourceAddress
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["authz:CredentialResourceAddress"];
+            }
+        }
+        public static string CredentialResourceRealm
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["authz:CredentialResourceRealm"];
+            }
+        }
+        public static string CredentialResourceThumbprint
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["authz:CredentialResourceThumbprint"];
+            }
+        }
     }
 }

@@ -208,13 +208,11 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     "Missing Username or password.",
                     OAuthConstants.Errors.InvalidGrant);
             }
-            else
-            {
-                validatedRequest.UserName = request.UserName;
-                validatedRequest.Password = request.Password;
 
-                Tracing.Information("Resource owner: " + request.UserName);
-            }
+            validatedRequest.UserName = request.UserName;
+            validatedRequest.Password = request.Password;
+
+            Tracing.Information("Resource owner: " + request.UserName);
         }
 
         private void ValidateCodeGrant(ValidatedRequest validatedRequest, TokenRequest request)

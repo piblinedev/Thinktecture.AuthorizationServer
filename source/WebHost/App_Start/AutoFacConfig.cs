@@ -29,6 +29,8 @@ namespace Thinktecture.AuthorizationServer.WebHost
             
             builder.RegisterType<DefaultAssertionGrantValidator>().As<IAssertionGrantValidation>();
             builder.RegisterType<AuthorizationServerContext>().InstancePerHttpRequest();
+
+            builder.Register(x => CreateCredentialAuthorizationResource()).As<ICredentialAuthorizationResource>();
             builder.RegisterType<WSTrustResourceOwnerCredentialValidation>().As<IResourceOwnerCredentialValidation>();
             
             builder.RegisterModule(new AutofacWebTypesModule());
@@ -46,6 +48,16 @@ namespace Thinktecture.AuthorizationServer.WebHost
             // Web API
             var resolver = new AutofacWebApiDependencyResolver(container);
             GlobalConfiguration.Configuration.DependencyResolver = resolver;
+        }
+
+        private static ICredentialAuthorizationResource CreateCredentialAuthorizationResource()
+        {
+            return new DefaultOAuth2CredentialAuthorizationResource
+                {
+                    Address = Settings.CredentialResourceAddress.Trim(),
+                    Realm = Settings.CredentialResourceRealm.Trim(),
+                    IssuerThumbprint = Settings.CredentialResourceThumbprint.Trim()
+                };
         }
     }
 }

@@ -23,15 +23,11 @@ namespace Thinktecture.AuthorizationServer.OAuth2
         readonly string _realm;
         readonly string _issuerThumbprint;
 
-        //Added to prevent AutoFac from throwing an exception during dependency resolution
-        public WSTrustResourceOwnerCredentialValidation(){}
-
-        public WSTrustResourceOwnerCredentialValidation(string address, string realm, string issuerThumbprint)
+        public WSTrustResourceOwnerCredentialValidation(ICredentialAuthorizationResource credentialAuthorization)
         {
-            _address = address;
-            _realm = realm;
-            _issuerThumbprint = issuerThumbprint;
-            Tracing.InformationFormat("ResourceOwner validation Address:{0} Realm:{1} Thumbprint:{2}", address, realm, issuerThumbprint);
+            _address = credentialAuthorization.Address;
+            _realm = credentialAuthorization.Realm;
+            _issuerThumbprint = credentialAuthorization.IssuerThumbprint;
         }
 
         public ClaimsPrincipal Validate(string userName, string password)
@@ -40,12 +36,24 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             var credentials = new ClientCredentials();
             credentials.UserName.UserName = userName;
             credentials.UserName.Password = password;
+            GenericXmlSecurityToken genericToken;
 
-            var genericToken = WSTrustClient.Issue(
-                new EndpointAddress(_address),
-                new EndpointAddress(_realm),
-                binding,
-                credentials) as GenericXmlSecurityToken;
+            Tracing.Start("ResourceOwner validation started");
+            Tracing.InformationFormat("ResourceOwner validation Address:{0} Realm:{1} Thumbprint:{2}", _address, _realm,_issuerThumbprint);
+            try
+            {
+                genericToken = WSTrustClient.Issue(
+                    new EndpointAddress(_address),
+                    new EndpointAddress(_realm),
+                    binding,
+                    credentials) as GenericXmlSecurityToken;
+            }
+
+            catch (MessageSecurityException ex)
+            {
+                Tracing.Error("WSTrustResourceOwnerCredentialValidation failed: " + ex);
+                return null;
+            }
 
             var config = new SecurityTokenHandlerConfiguration();
             config.AudienceRestriction.AllowedAudienceUris.Add(new Uri(_realm));
@@ -64,7 +72,10 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 
             Tracing.Information("Successfully requested token for user via WS-Trust");
             Tracing.InformationFormat("Token received for user via WS-Trust {0}", token);
-            return FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate("ResourceOwnerPasswordValidation", principal);
+            Tracing.Stop("ResourceOwner validation finished");
+            
+            return FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager
+                                       .Authenticate("ResourceOwnerPasswordValidation", principal);
         }
     }
 }
