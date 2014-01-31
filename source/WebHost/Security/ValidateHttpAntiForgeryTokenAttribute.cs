@@ -8,13 +8,13 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Web.Mvc;
 
-namespace Thinktecture.AuthorizationServer.WebHost.Security
+namespace Thinktecture.AuthorizationServer.WebHost
 {
     public class ValidateHttpAntiForgeryTokenAttribute : AuthorizationFilterAttribute
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            var request = actionContext.ControllerContext.Request;
+            HttpRequestMessage request = actionContext.ControllerContext.Request;
 
             try
             {

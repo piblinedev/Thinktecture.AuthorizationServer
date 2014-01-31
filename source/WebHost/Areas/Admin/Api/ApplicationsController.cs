@@ -10,7 +10,6 @@ using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api

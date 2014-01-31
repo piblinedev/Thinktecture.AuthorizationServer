@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -18,16 +17,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class ScopesController : ApiController
     {
-        readonly IAuthorizationServerAdministration _config;
+        IAuthorizationServerAdministration config;
 
         public ScopesController(IAuthorizationServerAdministration config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public HttpResponseMessage Get(int id)
         {
-            var scope = _config.Scopes.All.SingleOrDefault(x => x.ID == id);
+            var scope = this.config.Scopes.All.SingleOrDefault(x => x.ID == id);
             if (scope == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -48,14 +47,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            var scope = _config.Scopes.All.SingleOrDefault(x => x.ID == id);
+            var scope = config.Scopes.All.SingleOrDefault(x => x.ID == id);
             if (scope == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
             var query =
-                (from a in _config.Applications.All
+                (from a in this.config.Applications.All
                  from s in a.Scopes
                  where s.ID == id
                  select a);
@@ -71,18 +70,18 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
             scope.Description = model.Description;
             scope.Emphasize = model.Emphasize;
 
-            _config.SaveChanges();
+            config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }
 
         public HttpResponseMessage Delete(int id)
         {
-            var scope = _config.Scopes.All.SingleOrDefault(x => x.ID == id);
+            var scope = this.config.Scopes.All.SingleOrDefault(x => x.ID == id);
             if (scope != null)
             {
-                _config.Scopes.Remove(scope);
-                _config.SaveChanges();
+                this.config.Scopes.Remove(scope);
+                this.config.SaveChanges();
             }
 
             return Request.CreateResponse(HttpStatusCode.NoContent);

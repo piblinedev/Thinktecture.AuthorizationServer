@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -18,17 +17,17 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class TokensController : ApiController
     {
-        readonly IAuthorizationServerAdministration _config;
+        IAuthorizationServerAdministration config;
 
         public TokensController(IAuthorizationServerAdministration config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public HttpResponseMessage Get()
         {
             var query =
-                from item in _config.Tokens.All.OrderBy(x=>x.Created).ToArray()
+                from item in config.Tokens.All.OrderBy(x=>x.Created).ToArray()
                 select new { 
                     id = item.GrantId,
                     type = item.Type == StoredGrantType.AuthorizationCode ? "authorization" : (item.Type == StoredGrantType.RefreshTokenIdentifier ? "refresh":"consent"),
@@ -43,22 +42,22 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
 
         public HttpResponseMessage Delete(string id)
         {
-            var item = _config.Tokens.All.SingleOrDefault(x => x.GrantId == id);
+            var item = this.config.Tokens.All.SingleOrDefault(x => x.GrantId == id);
             if (item != null)
             {
-                _config.Tokens.Remove(item);
-                _config.SaveChanges();
+                this.config.Tokens.Remove(item);
+                this.config.SaveChanges();
             }
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }
         
         public HttpResponseMessage Delete()
         {
-            foreach(var item in _config.Tokens.All)
+            foreach(var item in this.config.Tokens.All)
             {
-                _config.Tokens.Remove(item);
+                this.config.Tokens.Remove(item);
             }
-            _config.SaveChanges();
+            this.config.SaveChanges();
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }
     }

@@ -9,7 +9,7 @@ using Thinktecture.IdentityModel.Web.Mvc;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
-    public class FilterConfig
+    internal class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {

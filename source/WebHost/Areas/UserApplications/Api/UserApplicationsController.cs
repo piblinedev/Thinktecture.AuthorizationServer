@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
 {
@@ -18,11 +17,11 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
     [ValidateHttpAntiForgeryToken]
     public class UserApplicationsController : ApiController
     {
-        readonly IAuthorizationServerAdministration _config;
+        IAuthorizationServerAdministration config;
 
         public UserApplicationsController(IAuthorizationServerAdministration config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public HttpResponseMessage Get()
@@ -31,7 +30,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
             if (String.IsNullOrWhiteSpace(subject)) return Request.CreateResponse(HttpStatusCode.NotFound);
 
             var query =
-                from token in _config.Tokens.All
+                from token in config.Tokens.All
                 where
                     token.Type != AuthorizationServer.Models.StoredGrantType.AuthorizationCode &&
                     token.Subject == subject
@@ -41,7 +40,8 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
                 from token in tokens
                 group token by token.id into clients
                 select new { 
-                    id = clients.Key, clients.First().name, 
+                    id = clients.Key, 
+                    name = clients.First().name, 
                     apps = clients.Select(x => x.application).Distinct() 
                 };
             return Request.CreateResponse(HttpStatusCode.OK, data.ToArray());
@@ -53,14 +53,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
             if (String.IsNullOrWhiteSpace(subject)) return Request.CreateResponse(HttpStatusCode.NotFound);
 
             var query =
-                from token in _config.Tokens.All
+                from token in this.config.Tokens.All
                 where token.Subject == subject && token.Client.ClientId == id
                 select token;
             foreach (var item in query)
             {
-                _config.Tokens.Remove(item);
+                this.config.Tokens.Remove(item);
             }
-            _config.SaveChanges();
+            this.config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }
@@ -71,14 +71,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Api
             if (String.IsNullOrWhiteSpace(subject)) return Request.CreateResponse(HttpStatusCode.NotFound);
 
             var query =
-                from token in _config.Tokens.All
+                from token in this.config.Tokens.All
                 where token.Subject == subject
                 select token;
             foreach (var item in query)
             {
-                _config.Tokens.Remove(item);
+                this.config.Tokens.Remove(item);
             }
-            _config.SaveChanges();
+            this.config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.NoContent);
         }

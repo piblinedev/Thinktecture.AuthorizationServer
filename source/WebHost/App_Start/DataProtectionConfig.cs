@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
-    public class DataProtectionConfig
+    internal class DataProtectionConfig
     {
         public static void Configure()
         {

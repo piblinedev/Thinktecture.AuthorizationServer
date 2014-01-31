@@ -12,7 +12,6 @@ using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -49,13 +48,13 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
             }
 
             var key = new X509CertificateReference
-                {
-                    Name = model.Name,
-                    StoreName = System.Security.Cryptography.X509Certificates.StoreName.My,
-                    Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine,
-                    FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint,
-                    FindValue = model.Thumbprint
-                };
+            {
+                Name = model.Name,
+                StoreName = System.Security.Cryptography.X509Certificates.StoreName.My,
+                Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine,
+                FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint,
+                FindValue = model.Thumbprint
+            };
 
             var cert = key.Certificate;
             if (cert == null)
@@ -66,11 +65,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
 
             try
             {
-                var tmp = cert.PrivateKey;
+                if (cert.HasPrivateKey)
+                {
+                    var tmp = cert.PrivateKey;
+                }
             }
-            catch (CryptographicException)
+            catch (CryptographicException exp)
             {
-                ModelState.AddModelError("", "No Read Access to Private Key of Certificate");
+                ModelState.AddModelError("", exp.Message);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
@@ -126,11 +128,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
 
             try
             {
-                var tmp = cert.PrivateKey;
+                if (cert.HasPrivateKey)
+                {
+                    var tmp = cert.PrivateKey;
+                }
             }
-            catch (CryptographicException)
+            catch (CryptographicException exp)
             {
-                ModelState.AddModelError("", "No Read Access to Private Key of Certificate");
+                ModelState.AddModelError("", exp.Message);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
@@ -142,7 +147,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 {
                     cert = key.Certificate;
                 }
-                catch(InvalidOperationException)
+                catch (InvalidOperationException)
                 {
                     ModelState.AddModelError("", "Multiple certificates match that subject name");
                     return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());

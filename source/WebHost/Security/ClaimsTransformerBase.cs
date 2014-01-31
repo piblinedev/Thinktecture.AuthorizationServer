@@ -4,21 +4,22 @@
  */
 
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.IdentityModel;
 
-namespace Thinktecture.AuthorizationServer.WebHost.Security
+namespace Thinktecture.AuthorizationServer.WebHost
 {
     public abstract class ClaimsTransformerBase : ClaimsAuthenticationManager
     {
-        protected IAuthorizationServerAdministratorsService Service;
+        protected IAuthorizationServerAdministratorsService service;
         protected abstract string GetSubject(ClaimsPrincipal principal);
-
-        protected ClaimsTransformerBase(IAuthorizationServerAdministratorsService svc)
+       
+        public ClaimsTransformerBase(IAuthorizationServerAdministratorsService svc)
         {
-            Service = svc;
+            this.service = svc;
         }
 
         public override ClaimsPrincipal Authenticate(string resourceName, ClaimsPrincipal incomingPrincipal)
@@ -27,13 +28,15 @@ namespace Thinktecture.AuthorizationServer.WebHost.Security
             var claims = new List<Claim> { new Claim(Constants.ClaimTypes.Subject, subject) };
 
             claims.AddRange(AddInternalClaims(subject));
+            claims.AddRange(AddExternalClaims(incomingPrincipal));
+
 
             return Principal.Create("AuthorizationServer", claims.ToArray());
         }
 
         protected virtual IEnumerable<Claim> AddInternalClaims(string subject)
         {
-            var adminNameIDs = Service.GetAdministratorNameIDs();
+            var adminNameIDs = this.service.GetAdministratorNameIDs();
             var result = new List<Claim>();
 
             if (adminNameIDs.Any(a => a.Equals(subject, System.StringComparison.InvariantCultureIgnoreCase)))
@@ -46,6 +49,28 @@ namespace Thinktecture.AuthorizationServer.WebHost.Security
             }
 
             return result;
+        }
+
+        private IEnumerable<Claim> AddExternalClaims(ClaimsPrincipal incomingPrincipal)
+        {
+            var claims = new List<Claim>();
+
+            var filterClaims = ConfigurationManager.AppSettings["authz:FilterIncomingClaims"];
+            if (!string.IsNullOrEmpty(filterClaims))
+            {
+                bool filterFlag;
+                if (bool.TryParse(filterClaims, out filterFlag))
+                {
+                    if (!filterFlag)
+                    {
+                        claims.AddRange(from c in incomingPrincipal.Claims
+                                        where !c.Type.Equals(Constants.ClaimTypes.Subject)
+                                        select c);
+                    }
+                }
+            }
+
+            return claims;
         }
     }
 }

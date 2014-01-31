@@ -5,9 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHost", "WebHost\WebHost.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{AC182D2C-E414-4E6A-BCDE-3D72C3A2550F}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thinktecture.AuthorizationServer.OAuth2", "Libraries\Thinktecture.AuthorizationServer.OAuth2\Thinktecture.AuthorizationServer.OAuth2.csproj", "{D776C229-B699-40DD-A023-5BF1F54E27D3}"
@@ -53,9 +51,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E317F79E-23B3-4D52-B869-2DC80215934E} = {7FC0E4A5-696A-495D-9456-180794A71E28}
 		{E8643146-28AE-437B-9BAD-E4593509B4DC} = {7E497EDC-F40F-4669-B9C2-ABBBEB1FEE08}
 		{8D40FCEB-B25A-4EC3-81CC-201F7BBF41CF} = {7E497EDC-F40F-4669-B9C2-ABBBEB1FEE08}
 		{D776C229-B699-40DD-A023-5BF1F54E27D3} = {7E497EDC-F40F-4669-B9C2-ABBBEB1FEE08}
+		{E317F79E-23B3-4D52-B869-2DC80215934E} = {7FC0E4A5-696A-495D-9456-180794A71E28}
 	EndGlobalSection
 EndGlobal

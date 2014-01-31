@@ -40,7 +40,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt">
-      <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt.3.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+      <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt.3.0.1\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.ValidatingIssuerNameRegistry">
+      <HintPath>..\..\packages\System.IdentityModel.Tokens.ValidatingIssuerNameRegistry.4.5.1\lib\net45\System.IdentityModel.Tokens.ValidatingIssuerNameRegistry.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="Thinktecture.IdentityModel">
@@ -83,6 +86,7 @@
     <Compile Include="Tracing.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

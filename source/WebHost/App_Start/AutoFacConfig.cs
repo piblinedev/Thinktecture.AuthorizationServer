@@ -15,7 +15,7 @@ using Thinktecture.AuthorizationServer.OAuth2.Endpoints;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
-    public class AutofacConfig
+    internal class AutofacConfig
     {
         public static void Configure()
         {
@@ -23,22 +23,23 @@ namespace Thinktecture.AuthorizationServer.WebHost
             builder.RegisterType<EFStoredGrantManager>().As<IStoredGrantManager>();
             builder.RegisterType<EFAuthorizationServerConfiguration>().As<IAuthorizationServerConfiguration>();
             builder.RegisterType<EFAuthorizationServerAdministration>().As<IAuthorizationServerAdministration>();
-            builder.RegisterType<EFAuthorizationServerAdministratorsService>().As<IAuthorizationServerAdministratorsService>();
+            builder.RegisterType<EFAuthorizationServerAdministratorsService>()
+                   .As<IAuthorizationServerAdministratorsService>();
 
             //builder.RegisterType<Thinktecture.Samples.AssertionGrantValidator>().As<IAssertionGrantValidation>();
-            
+
             builder.RegisterType<DefaultAssertionGrantValidator>().As<IAssertionGrantValidation>();
             builder.RegisterType<AuthorizationServerContext>().InstancePerHttpRequest();
 
             builder.Register(x => CreateCredentialAuthorizationResource()).As<ICredentialAuthorizationResource>();
             builder.RegisterType<WSTrustResourceOwnerCredentialValidation>().As<IResourceOwnerCredentialValidation>();
-            
+
             builder.RegisterModule(new AutofacWebTypesModule());
 
-            builder.RegisterControllers(typeof(AuthorizeController).Assembly);
-            builder.RegisterControllers(typeof(AutofacConfig).Assembly);
-            builder.RegisterApiControllers(typeof(TokenController).Assembly);
-            builder.RegisterApiControllers(typeof(AutofacConfig).Assembly);
+            builder.RegisterControllers(typeof (AuthorizeController).Assembly);
+            builder.RegisterControllers(typeof (AutofacConfig).Assembly);
+            builder.RegisterApiControllers(typeof (TokenController).Assembly);
+            builder.RegisterApiControllers(typeof (AutofacConfig).Assembly);
 
             var container = builder.Build();
 

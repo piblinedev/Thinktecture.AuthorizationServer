@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Thinktecture.AuthorizationServer.Interfaces;
-using Thinktecture.AuthorizationServer.WebHost.Security;
 using Thinktecture.IdentityModel.Authorization.WebApi;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
@@ -18,16 +17,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class GlobalAdministratorsController : ApiController
     {
-        readonly IAuthorizationServerAdministration _config;
+        IAuthorizationServerAdministration config;
 
         public GlobalAdministratorsController(IAuthorizationServerAdministration config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public HttpResponseMessage Get()
         {
-            var config = _config.GlobalConfiguration;
+            var config = this.config.GlobalConfiguration;
             var admins = config.Administrators.ToArray();
             return Request.CreateResponse(HttpStatusCode.OK, admins);
         }
@@ -40,15 +39,15 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            if (_config.GlobalConfiguration.Administrators.Any(x => x.NameID == nameID))
+            if (this.config.GlobalConfiguration.Administrators.Any(x => x.NameID == nameID))
             {
                 ModelState.AddModelError("", "That user is already an administrator.");
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
             var item = new AuthorizationServer.Models.AuthorizationServerAdministrator { NameID = nameID };
-            _config.GlobalConfiguration.Administrators.Add(item);
-            _config.SaveChanges();
+            this.config.GlobalConfiguration.Administrators.Add(item);
+            this.config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.OK, item);
         }
@@ -56,11 +55,11 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
         public HttpResponseMessage Delete(int id)
         {
             var item =
-                _config.GlobalConfiguration.Administrators.SingleOrDefault(x => x.ID == id);
+                this.config.GlobalConfiguration.Administrators.Where(x => x.ID == id).SingleOrDefault();
             if (item != null)
             {
-                _config.GlobalConfiguration.Administrators.Remove(item);
-                _config.SaveChanges();
+                this.config.GlobalConfiguration.Administrators.Remove(item);
+                this.config.SaveChanges();
             }
 
             return Request.CreateResponse(HttpStatusCode.NoContent);
