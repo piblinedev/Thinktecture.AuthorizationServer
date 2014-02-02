@@ -6,14 +6,14 @@ namespace Thinktecture.Samples
         //
         // change the below constants to match your local system
         //
-
-        public const string WebHostName = "web.local";
-        public const string WebHostv1Path = "/rs/api/";
+        //http://localhost:9913/
+        public const string WebHostName = "localhost:2601";
+        public const string WebHostv1Path = "/v1/";
         public const string WebHostv2Path = "/rs2/api/";
         
-        public const string WebHostv1BaseAddress = "https://" + WebHostName + WebHostv1Path;
-        public const string WebHostv2BaseAddress = "https://" + WebHostName + WebHostv2Path;
-       
+        public const string WebHostv1BaseAddress = "http://" + WebHostName + WebHostv1Path;
+        public const string WebHostv2BaseAddress = "http://" + WebHostName + WebHostv2Path;
+
 
         public const string Application = "users";
         public const string Audience = "users";
@@ -24,7 +24,7 @@ namespace Thinktecture.Samples
             public const string CodeClientSecret = "secret";
             public const string CodeClientRedirectUrl = "https://localhost:44303/callback";
 
-            public const string ResourceOwnerClient = "roclient";
+            public const string ResourceOwnerClient = "resource";
             public const string ResourceOwnerClientSecret = "secret";
 
             public const string ImplicitClient = "implicitclient";
@@ -36,11 +36,11 @@ namespace Thinktecture.Samples
 
         public static class AS
         {
-            public const string OAuth2TokenEndpoint = "https://as.local/" + Application + "/oauth/token";
-            public const string OAuth2AuthorizeEndpoint = "https://as.local/" + Application + "/oauth/authorize";
+            public const string OAuth2TokenEndpoint = "https://identity.pibline.com/authsrv/" + Application + "/oauth/token"; //" + Application + "
+            public const string OAuth2AuthorizeEndpoint = "https://identity.pibline.com/authsrv/" + Application + "/oauth/authorize";
 
-            public const string IssuerName = "AS";
-            public const string SigningKey = "1fTiS2clmPTUlNcpwYzd5i4AEFJ2DEsd8TcUsllmaKQ=";
+            public const string IssuerName = "http://identity.pibline.com/issuer";
+            public const string SigningKey = "bDPeNV7OPRe9N55XA3PoV+V2brnOO0qemBr3BNTB478=";
         }
     }
 }

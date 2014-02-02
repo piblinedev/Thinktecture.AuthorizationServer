@@ -17,14 +17,14 @@ namespace Thinktecture.Samples
             string.Format("\n\nElapsed Time: {0}\n", sw.ElapsedMilliseconds).ConsoleRed();
         }
 
-        public static void ShowConsole(IEnumerable<ViewClaim> claims)
+        public static void ShowConsole(IEnumerable<object> claims)
         {
             "\nClaims\n".ConsoleYellow();
 
             claims.ToList().ForEach(c =>
             {
-                Console.WriteLine(" " + c.Type);
-                string.Format("  {0}\n", c.Value).ConsoleGreen();
+                Console.WriteLine(" " + c.GetType());
+                string.Format("  {0}\n", c.ToString()).ConsoleGreen();
             });
         }    
     }

@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,8 +11,9 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage
+namespace Thinktecture.Samples.Areas.HelpPage
 {
     /// <summary>
     /// This class will generate the samples for the help page.
@@ -213,7 +213,7 @@ namespace ResourceServer__Web_API_v1_.Areas.HelpPage
                         break;
                     case SampleDirection.Response:
                     default:
-                        type = api.ActionDescriptor.ReturnType;
+                        type = api.ResponseDescription.ResponseType ?? api.ResponseDescription.DeclaredType;
                         formatters = api.SupportedResponseFormatters;
                         break;
                 }

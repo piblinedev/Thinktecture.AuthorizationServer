@@ -1,4 +1,3 @@
-using ResourceServer__Web_API_v1_.Areas.HelpPage.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,8 +7,9 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Thinktecture.Samples.Areas.HelpPage.Models;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage
+namespace Thinktecture.Samples.Areas.HelpPage
 {
     public static class HelpPageConfigurationExtensions
     {

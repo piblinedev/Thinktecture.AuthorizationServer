@@ -8,7 +8,7 @@ namespace Thinktecture.Samples
     class Program
     {
         //static Uri _baseAddress = new Uri(Constants.WebHostv1BaseAddress);
-        static Uri _baseAddress = new Uri(Constants.WebHostv2BaseAddress);
+        static Uri _baseAddress = new Uri(Constants.WebHostv1BaseAddress);
 
         static void Main(string[] args)
         {
@@ -50,10 +50,10 @@ namespace Thinktecture.Samples
 
                 Helper.Timer(() =>
                 {
-                    var response = client.GetAsync("identity").Result;
+                    var response = client.GetAsync("projects").Result;
                     response.EnsureSuccessStatusCode();
 
-                    var claims = response.Content.ReadAsAsync<IEnumerable<ViewClaim>>().Result;
+                    var claims = response.Content.ReadAsAsync<IEnumerable<object>>().Result;
                     Helper.ShowConsole(claims);
                 });
 

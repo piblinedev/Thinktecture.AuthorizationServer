@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Claims;
 using Thinktecture.IdentityModel.Client;
 
 namespace Thinktecture.Samples
@@ -8,7 +9,7 @@ namespace Thinktecture.Samples
     class Program
     {
         //static Uri _baseAddress = new Uri(Constants.WebHostv1BaseAddress);
-        static Uri _baseAddress = new Uri(Constants.WebHostv2BaseAddress);
+        static Uri _baseAddress = new Uri(Constants.WebHostv1BaseAddress);
 
         static void Main(string[] args)
         {
@@ -28,15 +29,24 @@ namespace Thinktecture.Samples
                 new Uri(Constants.AS.OAuth2TokenEndpoint),
                 Constants.Clients.ResourceOwnerClient,
                 Constants.Clients.ResourceOwnerClientSecret);
+            TokenResponse response = null;
+            try
+            {
+                response =
+                    client.RequestResourceOwnerPasswordAsync("pibline.authorization", "letmein","read").Result;
+                client.RequestClientCredentialsAsync();
 
-            var response = client.RequestResourceOwnerPasswordAsync("bob", "abc!123", "read").Result;
+                Console.WriteLine(" access token");
+                response.AccessToken.ConsoleGreen();
 
-            Console.WriteLine(" access token");
-            response.AccessToken.ConsoleGreen();
-
-            Console.WriteLine("\n refresh token");
-            response.RefreshToken.ConsoleGreen();
-            Console.WriteLine();
+                Console.WriteLine("\n refresh token");
+                response.RefreshToken.ConsoleGreen();
+                Console.WriteLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
 
             return response;
         }
@@ -58,7 +68,7 @@ namespace Thinktecture.Samples
                     var response = client.GetAsync("identity").Result;
                     response.EnsureSuccessStatusCode();
 
-                    var claims = response.Content.ReadAsAsync<IEnumerable<ViewClaim>>().Result;
+                    var claims = response.Content.ReadAsAsync<IEnumerable<Claim>>().Result;
                     Helper.ShowConsole(claims);
                 });
 

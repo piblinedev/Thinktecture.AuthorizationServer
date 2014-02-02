@@ -14,9 +14,9 @@ namespace Thinktecture.Samples
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            var corsConfig = new Thinktecture.IdentityModel.Http.Cors.WebApi.WebApiCorsConfiguration();
+            var corsConfig = new IdentityModel.Http.Cors.WebApi.WebApiCorsConfiguration();
             corsConfig.ForResources("Identity").ForOrigins("https://localhost:44300").AllowAll();
-            var handler = new Thinktecture.IdentityModel.Http.Cors.WebApi.CorsMessageHandler(corsConfig, config);
+            var handler = new IdentityModel.Http.Cors.WebApi.CorsMessageHandler(corsConfig, config);
             config.MessageHandlers.Add(handler);
 
             config.EnableSystemDiagnosticsTracing();
@@ -31,11 +31,8 @@ namespace Thinktecture.Samples
                 RequireSsl = false,
             };
 
-            authentication.AddJsonWebToken(
-                issuer: Constants.AS.IssuerName,
-                audience: Constants.Audience,
-                signingKey: Constants.AS.SigningKey,
-                claimMappings: ClaimMappings.None);
+            authentication.AddJsonWebToken(Constants.AS.IssuerName, Constants.Audience, Constants.AS.SigningKey,
+                                           ClaimMappings.None);
 
             return authentication;
         }

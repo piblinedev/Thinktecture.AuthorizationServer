@@ -1,6 +1,6 @@
 using System;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage
+namespace Thinktecture.Samples.Areas.HelpPage
 {
     /// <summary>
     /// This represents a preformatted text sample on the help page. There's a display template named TextSample associated with this class.

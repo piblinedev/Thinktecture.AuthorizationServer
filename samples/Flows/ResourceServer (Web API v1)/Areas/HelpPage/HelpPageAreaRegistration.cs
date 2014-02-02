@@ -1,7 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage
+namespace Thinktecture.Samples.Areas.HelpPage
 {
     public class HelpPageAreaRegistration : AreaRegistration
     {

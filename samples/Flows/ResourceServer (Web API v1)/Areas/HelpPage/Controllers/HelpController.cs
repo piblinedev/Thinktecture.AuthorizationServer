@@ -1,9 +1,9 @@
-using ResourceServer__Web_API_v1_.Areas.HelpPage.Models;
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
+using Thinktecture.Samples.Areas.HelpPage.Models;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage.Controllers
+namespace Thinktecture.Samples.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.
@@ -24,6 +24,7 @@ namespace ResourceServer__Web_API_v1_.Areas.HelpPage.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.DocumentationProvider = Configuration.Services.GetDocumentationProvider();
             return View(Configuration.Services.GetApiExplorer().ApiDescriptions);
         }
 

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage.Models
+namespace Thinktecture.Samples.Areas.HelpPage.Models
 {
     /// <summary>
     /// The model that represents an API displayed on the help page.

@@ -20,7 +20,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class X509KeysController : ApiController
     {
-        readonly IAuthorizationServerAdministration _config;
+        private readonly IAuthorizationServerAdministration _config;
 
         public X509KeysController(IAuthorizationServerAdministration config)
         {
@@ -48,13 +48,13 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
             }
 
             var key = new X509CertificateReference
-            {
-                Name = model.Name,
-                StoreName = System.Security.Cryptography.X509Certificates.StoreName.My,
-                Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine,
-                FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint,
-                FindValue = model.Thumbprint
-            };
+                {
+                    Name = model.Name,
+                    StoreName = System.Security.Cryptography.X509Certificates.StoreName.My,
+                    Location = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine,
+                    FindType = System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint,
+                    FindValue = model.Thumbprint
+                };
 
             var cert = key.Certificate;
             if (cert == null)

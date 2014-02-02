@@ -3,7 +3,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http.Description;
 
-namespace ResourceServer__Web_API_v1_.Areas.HelpPage
+namespace Thinktecture.Samples.Areas.HelpPage
 {
     public static class ApiDescriptionExtensions
     {

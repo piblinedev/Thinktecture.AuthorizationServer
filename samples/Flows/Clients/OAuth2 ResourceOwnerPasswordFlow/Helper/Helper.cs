@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Thinktecture.Samples
 {
@@ -17,7 +18,7 @@ namespace Thinktecture.Samples
             string.Format("\n\nElapsed Time: {0}\n", sw.ElapsedMilliseconds).ConsoleRed();
         }
 
-        public static void ShowConsole(IEnumerable<ViewClaim> claims)
+        public static void ShowConsole(IEnumerable<Claim> claims)
         {
             "\nClaims\n".ConsoleYellow();
 

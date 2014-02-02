@@ -26,21 +26,16 @@ namespace Thinktecture.IdentityModel.WinRT
                         WebAuthenticationOptions.None,
                         new Uri(startUri));
 
-                if (result.ResponseStatus == WebAuthenticationStatus.Success)
+                switch (result.ResponseStatus)
                 {
-                    return new AuthorizeResponse(result.ResponseData);
-                }
-                else if (result.ResponseStatus == WebAuthenticationStatus.UserCancel)
-                {
-                    throw new Exception("User cancelled authentication");
-                }
-                else if (result.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
-                {
-                    throw new Exception("HTTP Error returned by AuthenticateAsync() : " + result.ResponseErrorDetail.ToString());
-                }
-                else
-                {
-                    throw new Exception("Error returned by AuthenticateAsync() : " + result.ResponseStatus.ToString());
+                    case WebAuthenticationStatus.Success:
+                        return new AuthorizeResponse(result.ResponseData);
+                    case WebAuthenticationStatus.UserCancel:
+                        throw new Exception("User cancelled authentication");
+                    case WebAuthenticationStatus.ErrorHttp:
+                        throw new Exception("HTTP Error returned by AuthenticateAsync() : " + result.ResponseErrorDetail.ToString());
+                    default:
+                        throw new Exception("Error returned by AuthenticateAsync() : " + result.ResponseStatus.ToString());
                 }
             }
             catch
