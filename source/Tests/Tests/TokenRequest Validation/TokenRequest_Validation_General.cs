@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Security.Claims;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.OAuth2;
-using Thinktecture.AuthorizationServer.OAuth2.Endpoints;
 using Thinktecture.IdentityModel;
 
 namespace Thinktecture.AuthorizationServer.Test

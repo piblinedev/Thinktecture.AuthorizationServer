@@ -1,24 +1,12 @@
 ﻿namespace Thinktecture.AuthorizationServer.Interfaces
 {
     /// <summary>
-    /// Interface to specify the Credential Authorization Resource server
+    /// Added to convert the AutoFAC config file into proper IoC
     /// </summary>
-    /// <remarks>
-    /// Added to give better IoC resolution for AutoFac and elimitnate the need for an Autofac.config file
-    /// </remarks>
     public interface ICredentialAuthorizationResource
     {
-        /// <summary>
-        /// Uri of Authorization Resource Server
-        /// </summary>
         string Address { get; set; }
-        /// <summary>
-        /// Authorization Realm
-        /// </summary>
-        string Realm { get; set; }
-        /// <summary>
-        /// Certificate Issuer Thumbprint
-        /// </summary>
         string IssuerThumbprint { get; set; }
+        string Realm { get; set; }
     }
 }

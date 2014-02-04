@@ -14,12 +14,17 @@ namespace Thinktecture.AuthorizationServer.Models
         [Key]
         [Required]
         public virtual string ClientId { get; set; }
+
         [Required]
         public virtual string ClientSecret { get; private set; }
+
         public virtual ClientAuthenticationMethod AuthenticationMethod { get; set; }
+
         [Required]
         public virtual string Name { get; set; }
+
         public virtual OAuthFlow Flow { get; set; }
+        
         public virtual bool AllowRefreshToken { get; set; }
 
         public virtual bool Enabled { get; set; }
@@ -33,7 +38,9 @@ namespace Thinktecture.AuthorizationServer.Models
         {
             if (Flow == OAuthFlow.Implicit && AllowRefreshToken)
             {
-                yield return new ValidationResult("Implicit Flow can not use Refresh Tokens", new[]{"Code", "AllowRefreshToken"});
+                yield return
+                    new ValidationResult("Implicit Flow can not use Refresh Tokens", new[] {"Code", "AllowRefreshToken"})
+                    ;
             }
         }
 
@@ -45,6 +52,7 @@ namespace Thinktecture.AuthorizationServer.Models
             bytes = DataProtectection.Instance.Protect(bytes);
             ClientSecret = Convert.ToBase64String(bytes);
         }
+
         public string GetSharedSecret()
         {
             if (AuthenticationMethod != ClientAuthenticationMethod.SharedSecret) return null;
@@ -61,7 +69,7 @@ namespace Thinktecture.AuthorizationServer.Models
             var val = GetSharedSecret();
             return IdentityModel.ObfuscatingComparer.IsEqual(password, val);
         }
-        
+
         public void SetCertificateThumbprint(string thumbprint)
         {
             AuthenticationMethod = ClientAuthenticationMethod.CertificateThumbprint;

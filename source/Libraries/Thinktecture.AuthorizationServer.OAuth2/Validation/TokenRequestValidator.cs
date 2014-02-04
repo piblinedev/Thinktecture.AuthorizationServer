@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Thinktecture.AuthorizationServer.Extensions;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 
@@ -14,7 +15,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 {
     public class TokenRequestValidator
     {
-        IStoredGrantManager _handleManager;
+        private readonly IStoredGrantManager _handleManager;
 
         public TokenRequestValidator()
         {
@@ -40,11 +41,11 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 
             validatedRequest.Application = application;
             Tracing.InformationFormat("OAuth2 application: {0} ({1})",
-                validatedRequest.Application.Name,
-                validatedRequest.Application.Namespace);
+                                      validatedRequest.Application.Name,
+                                      validatedRequest.Application.Namespace);
 
             // grant type is required
-            if (string.IsNullOrWhiteSpace(request.Grant_Type))
+            if (string.IsNullOrWhiteSpace(request.GrantType))
             {
                 throw new TokenRequestValidationException(
                     "Missing grant_type",
@@ -52,26 +53,26 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check supported grant types
-            if (request.Grant_Type == OAuthConstants.GrantTypes.AuthorizationCode ||
-                request.Grant_Type == OAuthConstants.GrantTypes.ClientCredentials ||
-                request.Grant_Type == OAuthConstants.GrantTypes.RefreshToken ||
-                request.Grant_Type == OAuthConstants.GrantTypes.Password)
+            if (request.GrantType == OAuthConstants.GrantTypes.AuthorizationCode ||
+                request.GrantType == OAuthConstants.GrantTypes.ClientCredentials ||
+                request.GrantType == OAuthConstants.GrantTypes.RefreshToken ||
+                request.GrantType == OAuthConstants.GrantTypes.Password)
             {
-                validatedRequest.GrantType = request.Grant_Type;
+                validatedRequest.GrantType = request.GrantType;
                 Tracing.Information("Grant type: " + validatedRequest.GrantType);
             }
             else if (!string.IsNullOrWhiteSpace(request.Assertion))
             {
                 validatedRequest.GrantType = OAuthConstants.GrantTypes.Assertion;
-                validatedRequest.AssertionType = request.Grant_Type;
+                validatedRequest.AssertionType = request.GrantType;
                 validatedRequest.Assertion = request.Assertion;
-                
+
                 Tracing.Information("Grant type: " + validatedRequest.GrantType);
             }
             else
             {
                 throw new TokenRequestValidationException(
-                    "Invalid grant_type: " + request.Grant_Type,
+                    "Invalid grant_type: " + request.GrantType,
                     OAuthConstants.Errors.UnsupportedGrantType);
             }
 
@@ -86,8 +87,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 
             validatedRequest.Client = client;
             Tracing.InformationFormat("Client: {0} ({1})",
-                validatedRequest.Client.Name,
-                validatedRequest.Client.ClientId);
+                                      validatedRequest.Client.Name,
+                                      validatedRequest.Client.ClientId);
 
             switch (validatedRequest.GrantType)
             {
@@ -108,7 +109,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     break;
                 default:
                     throw new TokenRequestValidationException(
-                        "Invalid grant_type: " + request.Grant_Type,
+                        "Invalid grant_type: " + request.GrantType,
                         OAuthConstants.Errors.UnsupportedGrantType);
             }
 
@@ -143,14 +144,14 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check for refresh token
-            if (string.IsNullOrWhiteSpace(request.Refresh_Token))
+            if (string.IsNullOrWhiteSpace(request.RefreshToken))
             {
                 throw new TokenRequestValidationException(
                     "Missing refresh token",
                     OAuthConstants.Errors.InvalidGrant);
             }
 
-            validatedRequest.RefreshToken = request.Refresh_Token;
+            validatedRequest.RefreshToken = request.RefreshToken;
             Tracing.Information("Refresh token: " + validatedRequest.RefreshToken);
 
             // check for refresh token in datastore
@@ -185,7 +186,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             if (handle.Client.ClientId != validatedRequest.Client.ClientId)
             {
                 throw new TokenRequestValidationException(
-                    string.Format("Client {0} is trying to refresh token from {1}.", validatedRequest.Client.ClientId, handle.Client.ClientId),
+                    string.Format("Client {0} is trying to refresh token from {1}.", validatedRequest.Client.ClientId,
+                                  handle.Client.ClientId),
                     OAuthConstants.Errors.InvalidGrant);
             }
         }
@@ -256,12 +258,13 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             if (handle.Client.ClientId != validatedRequest.Client.ClientId)
             {
                 throw new TokenRequestValidationException(
-                    string.Format("Client {0} is trying to request token using an authorization code from {1}.", validatedRequest.Client.ClientId, handle.Client.ClientId),
+                    string.Format("Client {0} is trying to request token using an authorization code from {1}.",
+                                  validatedRequest.Client.ClientId, handle.Client.ClientId),
                     OAuthConstants.Errors.InvalidGrant);
             }
 
             // redirect URI is required
-            if (string.IsNullOrWhiteSpace(request.Redirect_Uri))
+            if (string.IsNullOrWhiteSpace(request.RedirectUri))
             {
                 throw new TokenRequestValidationException(
                     string.Format("Redirect URI is missing"),
@@ -269,10 +272,12 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check if redirect URI from authorize and token request match
-            if (!handle.RedirectUri.Equals(request.Redirect_Uri))
+            if (!handle.RedirectUri.Equals(request.RedirectUri))
             {
                 throw new TokenRequestValidationException(
-                    string.Format("Redirect URI in token request ({0}), does not match redirect URI from authorize request ({1})", validatedRequest.RedirectUri, handle.RedirectUri),
+                    string.Format(
+                        "Redirect URI in token request ({0}), does not match redirect URI from authorize request ({1})",
+                        validatedRequest.RedirectUri, handle.RedirectUri),
                     OAuthConstants.Errors.InvalidRequest);
             }
         }
@@ -303,7 +308,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             var requestedScopes = request.Scope.Split(' ').ToList();
             List<Scope> resultingScopes;
 
-            if (validatedRequest.Application.Scopes.TryValidateScopes(validatedRequest.Client.ClientId, requestedScopes, out resultingScopes))
+            if (validatedRequest.Application.Scopes.TryValidateScopes(validatedRequest.Client.ClientId, requestedScopes,
+                                                                      out resultingScopes))
             {
                 validatedRequest.Scopes = resultingScopes;
                 Tracing.InformationFormat("Requested scopes: {0}", request.Scope);

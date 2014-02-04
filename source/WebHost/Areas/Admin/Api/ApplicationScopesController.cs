@@ -18,16 +18,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
     [ValidateHttpAntiForgeryToken]
     public class ApplicationScopesController : ApiController
     {
-        IAuthorizationServerAdministration config;
+        readonly IAuthorizationServerAdministration _config;
 
         public ApplicationScopesController(IAuthorizationServerAdministration config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public HttpResponseMessage Get(int id)
         {
-            var app = this.config.Applications.All.SingleOrDefault(x => x.ID == id);
+            var app = _config.Applications.All.SingleOrDefault(x => x.ID == id);
             if (app == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -49,7 +49,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            var app = config.Applications.All.SingleOrDefault(x => x.ID == id);
+            var app = _config.Applications.All.SingleOrDefault(x => x.ID == id);
             if (app == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -61,14 +61,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState.GetErrors());
             }
 
-            var scope = new Scope();
-            scope.Name = model.Name;
-            scope.DisplayName = model.DisplayName;
-            scope.Description = model.Description;
-            scope.Emphasize = model.Emphasize;
+            var scope = new Scope
+                {
+                    Name = model.Name,
+                    DisplayName = model.DisplayName,
+                    Description = model.Description,
+                    Emphasize = model.Emphasize
+                };
 
             app.Scopes.Add(scope);
-            config.SaveChanges();
+            _config.SaveChanges();
 
             return Request.CreateResponse(HttpStatusCode.OK, new {
                     scope.ID,

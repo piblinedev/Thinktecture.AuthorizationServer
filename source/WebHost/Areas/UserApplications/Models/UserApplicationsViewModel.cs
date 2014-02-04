@@ -4,6 +4,7 @@
  */
 
 using System.Security.Claims;
+using Thinktecture.AuthorizationServer.Extensions;
 
 namespace Thinktecture.AuthorizationServer.WebHost.Areas.UserApplications.Models
 {

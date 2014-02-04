@@ -11,24 +11,24 @@ using System.Security.Claims;
 
 namespace Thinktecture.AuthorizationServer.Models
 {
-    public sealed class StoredGrant
+    public class StoredGrant
     {
         [Key]
-        public string GrantId { get; set; }
+        public virtual string GrantId { get; set; }
 
         public string Subject { get; set; }
-        public Client Client { get; set; }
-        public Application Application { get; set; }
-        public List<StoredGrantClaim> ResourceOwner { get; set; }
-        public List<Scope> Scopes { get; set; }
-        public string RedirectUri { get; set; }
-        public StoredGrantType Type { get; set; }
+        public virtual Client Client { get; set; }
+        public virtual Application Application { get; set; }
+        public virtual List<StoredGrantClaim> ResourceOwner { get; set; }
+        public virtual List<Scope> Scopes { get; set; }
+        public virtual string RedirectUri { get; set; }
+        public virtual StoredGrantType Type { get; set; }
         
-        public DateTime Created { get; set; }
-        public DateTime Expiration { get; set; }
+        public virtual DateTime Created { get; set; }
+        public virtual DateTime Expiration { get; set; }
 
-        public bool CreateRefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiration { get; set; }
+        public virtual bool CreateRefreshToken { get; set; }
+        public virtual DateTime? RefreshTokenExpiration { get; set; }
 
         public static StoredGrant CreateConsentDecision(string subject, Client client, Application application, IEnumerable<Scope> scopes)
         {

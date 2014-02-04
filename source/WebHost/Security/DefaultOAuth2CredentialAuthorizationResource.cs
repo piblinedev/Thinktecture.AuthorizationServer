@@ -1,6 +1,6 @@
 ﻿using Thinktecture.AuthorizationServer.Interfaces;
 
-namespace Thinktecture.AuthorizationServer.OAuth2
+namespace Thinktecture.AuthorizationServer.WebHost.Security
 {
     public class DefaultOAuth2CredentialAuthorizationResource : ICredentialAuthorizationResource
     {

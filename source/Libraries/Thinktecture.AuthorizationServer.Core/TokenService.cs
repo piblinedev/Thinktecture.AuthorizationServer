@@ -9,6 +9,7 @@ using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
+using Thinktecture.AuthorizationServer.Extensions;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.IdentityModel;
@@ -17,7 +18,7 @@ namespace Thinktecture.AuthorizationServer
 {
     public class TokenService
     {
-        readonly GlobalConfiguration _globalConfiguration;
+        private readonly GlobalConfiguration _globalConfiguration;
 
         public TokenService(GlobalConfiguration globalConfiguration)
         {
@@ -38,18 +39,19 @@ namespace Thinktecture.AuthorizationServer
             throw new ArgumentException("handle.Type");
         }
 
-        public virtual TokenResponse CreateTokenResponseFromAuthorizationCode(StoredGrant handle, IStoredGrantManager handleManager)
+        public virtual TokenResponse CreateTokenResponseFromAuthorizationCode(StoredGrant handle,
+                                                                              IStoredGrantManager handleManager)
         {
             var resourceOwner = Principal.Create(
                 "OAuth2",
                 handle.ResourceOwner.ToClaims().ToArray());
 
             var validatedRequest = new ValidatedRequest
-            {
-                Client = handle.Client,
-                Application = handle.Application,
-                Scopes = handle.Scopes
-            };
+                {
+                    Client = handle.Client,
+                    Application = handle.Application,
+                    Scopes = handle.Scopes
+                };
 
             var response = CreateTokenResponse(validatedRequest, resourceOwner);
 
@@ -66,13 +68,14 @@ namespace Thinktecture.AuthorizationServer
                 handleManager.Add(refreshTokenHandle);
                 response.RefreshToken = refreshTokenHandle.GrantId;
             }
-                
+
             handleManager.Delete(handle.GrantId);
 
             return response;
         }
 
-        public virtual TokenResponse CreateTokenResponseFromRefreshToken(StoredGrant handle, IStoredGrantManager handleManager)
+        public virtual TokenResponse CreateTokenResponseFromRefreshToken(StoredGrant handle,
+                                                                         IStoredGrantManager handleManager)
         {
             var resourceOwner = Principal.Create(
                 "OAuth2",
@@ -84,15 +87,15 @@ namespace Thinktecture.AuthorizationServer
             }
 
             var validatedRequest = new ValidatedRequest
-            {
-                Client = handle.Client,
-                Application = handle.Application,
-                Scopes = handle.Scopes,
-            };
+                {
+                    Client = handle.Client,
+                    Application = handle.Application,
+                    Scopes = handle.Scopes,
+                };
 
             var response = CreateTokenResponse(validatedRequest, resourceOwner);
             response.RefreshToken = handle.GrantId;
-            
+
             return response;
         }
 
@@ -104,11 +107,11 @@ namespace Thinktecture.AuthorizationServer
                 var token = CreateToken(request, claims);
 
                 return new TokenResponse
-                {
-                    AccessToken = WriteToken(token),
-                    ExpiresIn = request.Application.TokenLifetime * 60,
-                    TokenType = "Bearer"
-                };
+                    {
+                        AccessToken = WriteToken(token),
+                        ExpiresIn = request.Application.TokenLifetime*60,
+                        TokenType = "Bearer"
+                    };
             }
             catch (Exception ex)
             {
@@ -144,7 +147,6 @@ namespace Thinktecture.AuthorizationServer
             {
                 claims.AddRange(CreateResourceOwnerClaims(resourceOwner));
             }
-
             return claims;
         }
 
@@ -156,12 +158,11 @@ namespace Thinktecture.AuthorizationServer
         protected virtual List<Claim> CreateRequestClaims(ValidatedRequest request)
         {
             var claims = new List<Claim>
-            {
-                new Claim("client_id", request.Client.ClientId)
-            };
+                {
+                    new Claim("client_id", request.Client.ClientId)
+                };
 
             request.Scopes.ForEach(s => claims.Add(new Claim("scope", s.Name)));
-
             return claims;
         }
     }

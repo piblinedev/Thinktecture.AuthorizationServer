@@ -14,11 +14,10 @@ namespace Thinktecture.AuthorizationServer.WebHost
         public static void Register(HttpConfiguration config)
         {
             config.Routes.MapHttpRoute("OAuth2 Token Endpoint", "{appName}/oauth/token", new {Controller = "Token"},
-                                       null, new AuthenticationHandler(CreateClientAuthConfig(), config)
-                );
+                                       new {appName = "^[a-zA-Z0-9]+$"},
+                                       new AuthenticationHandler(CreateClientAuthConfig(), config));
 
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
-                new CamelCasePropertyNamesContractResolver();
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         public static AuthenticationConfiguration CreateClientAuthConfig()
@@ -26,6 +25,9 @@ namespace Thinktecture.AuthorizationServer.WebHost
             var authConfig = new AuthenticationConfiguration
                 {
                     InheritHostClientIdentity = false,
+#if DEBUG
+                    RequireSsl = false
+#endif
                 };
 
             // accept arbitrary credentials on basic auth header,

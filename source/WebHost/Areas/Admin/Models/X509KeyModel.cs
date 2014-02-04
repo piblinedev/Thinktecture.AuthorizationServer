@@ -21,14 +21,14 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Models
 
         public X509KeyModel(X509CertificateReference key)
         {
-            this.ID = key.ID;
-            this.Name = key.Name;
-            this.FindType =
+            ID = key.ID;
+            Name = key.Name;
+            FindType =
                 key.FindType == System.Security.Cryptography.X509Certificates.X509FindType.FindByThumbprint ?
-                FindType.Thumbprint : Models.FindType.SubjectName;
+                FindType.Thumbprint : FindType.SubjectName;
             if (key.Certificate != null)
             {
-                this.Thumbprint = key.Certificate.Thumbprint;
+                Thumbprint = key.Certificate.Thumbprint;
             }
         }
 

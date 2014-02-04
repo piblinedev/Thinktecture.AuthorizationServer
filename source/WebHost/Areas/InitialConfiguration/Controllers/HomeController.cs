@@ -14,15 +14,16 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.InitialConfiguration.Co
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        IAuthorizationServerAdministration authorizationServerAdministration;
+        private readonly IAuthorizationServerAdministration _authorizationServerAdministration;
+
         public HomeController(IAuthorizationServerAdministration authorizationServerAdministration)
         {
-            this.authorizationServerAdministration = authorizationServerAdministration;
+            _authorizationServerAdministration = authorizationServerAdministration;
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (authorizationServerAdministration.GlobalConfiguration != null)
+            if (_authorizationServerAdministration.GlobalConfiguration != null)
             {
                 filterContext.Result = new RedirectResult("~");
             }
@@ -30,7 +31,7 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.InitialConfiguration.Co
 
         public ActionResult Index()
         {
-            if (authorizationServerAdministration.GlobalConfiguration != null)
+            if (_authorizationServerAdministration.GlobalConfiguration != null)
             {
                 return Redirect("~/");
             }
@@ -42,24 +43,24 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.InitialConfiguration.Co
         [ValidateAntiForgeryToken]
         public ActionResult Index(InitialConfigurationModel model)
         {
-            if (authorizationServerAdministration.GlobalConfiguration != null)
+            if (_authorizationServerAdministration.GlobalConfiguration != null)
             {
                 return Redirect("~/");
             }
 
             if (ModelState.IsValid)
             {
-                var global = new GlobalConfiguration()
-                {
-                    AuthorizationServerName = model.Name,
-                    Issuer = model.Issuer,
-                    Administrators = new List<AuthorizationServerAdministrator>
+                var global = new GlobalConfiguration
                     {
-                        new AuthorizationServerAdministrator{NameID = model.Admin}
-                    }
-                };
-                authorizationServerAdministration.GlobalConfiguration = global;
-                authorizationServerAdministration.SaveChanges();
+                        AuthorizationServerName = model.Name,
+                        Issuer = model.Issuer,
+                        Administrators = new List<AuthorizationServerAdministrator>
+                            {
+                                new AuthorizationServerAdministrator {NameID = model.Admin}
+                            }
+                    };
+                _authorizationServerAdministration.GlobalConfiguration = global;
+                _authorizationServerAdministration.SaveChanges();
 
                 if (model.Test == "test")
                 {

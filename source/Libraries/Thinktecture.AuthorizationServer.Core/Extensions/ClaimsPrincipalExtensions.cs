@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Thinktecture.AuthorizationServer
+namespace Thinktecture.AuthorizationServer.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {

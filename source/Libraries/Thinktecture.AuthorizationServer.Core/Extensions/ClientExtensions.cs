@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Thinktecture.AuthorizationServer.Models;
 
-namespace Thinktecture.AuthorizationServer.Models
+namespace Thinktecture.AuthorizationServer.Extensions
 {
     public static class ClientExtensions
     {

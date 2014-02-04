@@ -4,7 +4,9 @@
  */
 
 using System.IdentityModel.Services;
+using System.IdentityModel.Services.Configuration;
 using System.IdentityModel.Tokens;
+using System.Linq;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -23,21 +25,27 @@ namespace Thinktecture.AuthorizationServer.WebHost
             JwtSecurityTokenHandler.InboundClaimTypeMap = ClaimMappings.None;
             JwtSecurityTokenHandler.OutboundClaimTypeMap = ClaimMappings.None;
 
+            //GlobalConfiguration.Configuration.EnableSystemDiagnosticsTracing();
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            
+
             AutofacConfig.Configure();
             DataProtectionConfig.Configure();
 
             AntiForgeryConfig.UniqueClaimTypeIdentifier = Constants.ClaimTypes.Subject;
             FederatedAuthentication.FederationConfigurationCreated += FederatedAuthentication_FederationConfigurationCreated;
+
+            //Remove the default FormUrlEncoded handler the JqueryMvc version is subclassed from the default one.
+            var formatter = GlobalConfiguration.Configuration.Formatters.FirstOrDefault(x => x.GetType().Name.Contains("FormUrlEncodedMediaTypeFormatter"));
+            if (null != formatter)
+                GlobalConfiguration.Configuration.Formatters.Remove(formatter);
         }
 
-        void FederatedAuthentication_FederationConfigurationCreated(object sender, System.IdentityModel.Services.Configuration.FederationConfigurationCreatedEventArgs e)
+        private void FederatedAuthentication_FederationConfigurationCreated(object sender, FederationConfigurationCreatedEventArgs e)
         {
             var svc = DependencyResolver.Current.GetService<IAuthorizationServerAdministratorsService>();
 

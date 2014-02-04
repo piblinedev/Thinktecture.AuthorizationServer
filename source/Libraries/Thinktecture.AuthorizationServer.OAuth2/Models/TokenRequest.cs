@@ -3,15 +3,18 @@
  * see license.txt
  */
 
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Thinktecture.AuthorizationServer.OAuth2
 {
     [JsonObject]
+    [DataContract]
     public class TokenRequest
     {
+ 
         [JsonProperty(PropertyName = "grant_type")]
-        public string Grant_Type { get; set; }
+        public string GrantType { get; set; }
 
         [JsonProperty(PropertyName = "scope")]
         public string Scope { get; set; }
@@ -26,10 +29,10 @@ namespace Thinktecture.AuthorizationServer.OAuth2
         public string Code { get; set; }
 
         [JsonProperty(PropertyName = "refresh_token")]
-        public string Refresh_Token { get; set; }
+        public string RefreshToken { get; set; }
 
         [JsonProperty(PropertyName = "redirect_uri")]
-        public string Redirect_Uri { get; set; }
+        public string RedirectUri { get; set; }
 
         [JsonProperty(PropertyName = "assertion")]
         public string Assertion { get; set; }

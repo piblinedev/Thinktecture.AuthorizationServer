@@ -7,19 +7,20 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Web.Mvc;
+using Thinktecture.AuthorizationServer.Extensions;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 using Thinktecture.IdentityModel.Web.Mvc;
 
-namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
+namespace Thinktecture.AuthorizationServer.OAuth2
 {
     [Authorize]
     [FrameOptions(FrameOptions.Deny)]
     [OutputCache(NoStore = true, Location = System.Web.UI.OutputCacheLocation.None)]
     public class AuthorizeController : Controller
     {
-        readonly IStoredGrantManager _handleManager;
-        readonly IAuthorizationServerConfiguration _config;
+        private readonly IStoredGrantManager _handleManager;
+        private readonly IAuthorizationServerConfiguration _config;
 
         public AuthorizeController(IStoredGrantManager handleManager, IAuthorizationServerConfiguration config)
         {
@@ -83,7 +84,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
         [ActionName("Index")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult HandleConsentResponse(string appName, string button, string[] scopes, AuthorizeRequest request, int? rememberDuration = null)
+        public ActionResult HandleConsentResponse(string appName, string button, string[] scopes,
+                                                  AuthorizeRequest request, int? rememberDuration = null)
         {
             Tracing.Start("OAuth2 Authorize Endoint - Consent response");
 
@@ -98,7 +100,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             if (button == "no")
             {
                 Tracing.Information("User denies access token request.");
-                return new ClientErrorResult(new Uri(request.redirect_uri), OAuthConstants.Errors.AccessDenied, request.response_type, request.state);
+                return new ClientErrorResult(new Uri(request.redirect_uri), OAuthConstants.Errors.AccessDenied,
+                                             request.response_type, request.state);
             }
 
             if (button == "yes")
@@ -151,7 +154,9 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
                     rememberDuration != null &&
                     validatedRequest.Client.Flow == OAuthFlow.Code)
                 {
-                    validatedRequest.RequestedRefreshTokenExpiration = rememberDuration == -1 ? DateTime.UtcNow.AddYears(50) : DateTime.UtcNow.AddHours(rememberDuration.Value);
+                    validatedRequest.RequestedRefreshTokenExpiration = rememberDuration == -1
+                                                                           ? DateTime.UtcNow.AddYears(50)
+                                                                           : DateTime.UtcNow.AddHours(rememberDuration.Value);
 
                     Tracing.Information("Selected refresh token lifetime in hours: " + rememberDuration);
                 }
@@ -204,8 +209,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             }
 
             var redirectString = string.Format("{0}?{1}",
-                        validatedRequest.RedirectUri.Uri,
-                        tokenString);
+                                               validatedRequest.RedirectUri.Uri,
+                                               tokenString);
 
             return Redirect(redirectString);
         }
@@ -218,18 +223,16 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             var response = sts.CreateTokenResponse(validatedRequest, ClaimsPrincipal.Current);
 
             var tokenString = string.Format("access_token={0}&token_type={1}&expires_in={2}",
-                    response.AccessToken,
-                    response.TokenType,
-                    response.ExpiresIn);
+                                            response.AccessToken,
+                                            response.TokenType,
+                                            response.ExpiresIn);
 
             if (!string.IsNullOrWhiteSpace(validatedRequest.State))
             {
                 tokenString = string.Format("{0}&state={1}", tokenString, Server.UrlEncode(validatedRequest.State));
             }
 
-            var redirectString = string.Format("{0}#{1}",
-                    validatedRequest.RedirectUri.Uri,
-                    tokenString);
+            var redirectString = string.Format("{0}#{1}", validatedRequest.RedirectUri.Uri, tokenString);
 
             Tracing.Information("Sending token response to redirect URI");
             return Redirect(redirectString);

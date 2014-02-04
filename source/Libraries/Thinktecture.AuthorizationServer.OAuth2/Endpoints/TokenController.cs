@@ -8,10 +8,11 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
+using Thinktecture.AuthorizationServer.Extensions;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 
-namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
+namespace Thinktecture.AuthorizationServer.OAuth2
 {
     public class TokenController : ApiController
     {
@@ -20,15 +21,8 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
         private readonly IStoredGrantManager _handleManager;
         private readonly IAssertionGrantValidation _assertionGrantValidator;
 
-        protected TokenController()
-        {
-        }
-
-        public TokenController(
-            IResourceOwnerCredentialValidation rocv,
-            IAuthorizationServerConfiguration config,
-            IStoredGrantManager handleManager,
-            IAssertionGrantValidation assertionGrantValidator)
+        public TokenController(IResourceOwnerCredentialValidation rocv, IAuthorizationServerConfiguration config,
+                               IStoredGrantManager handleManager, IAssertionGrantValidation assertionGrantValidator)
         {
             _rocv = rocv;
             _config = config;
@@ -36,6 +30,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             _assertionGrantValidator = assertionGrantValidator;
         }
 
+        [HttpPost]
         public HttpResponseMessage Post(string appName, TokenRequest request)
         {
             Tracing.Start("OAuth2 Token Endpoint");
@@ -45,7 +40,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             if (application == null)
             {
                 Tracing.Error("Application not found: " + appName);
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Not found");
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Application Not found");
             }
 
             // validate token request
@@ -75,7 +70,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
                     return ProcessAssertionGrant(validatedRequest);
             }
 
-            Tracing.Error("invalid grant type: " + request.Grant_Type);
+            Tracing.Error("invalid grant type: " + request.GrantType);
             return Request.CreateOAuthErrorResponse(OAuthConstants.Errors.UnsupportedGrantType);
         }
 
@@ -90,7 +85,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             }
             catch (Exception ex)
             {
-                Tracing.Error("Unhandled exception in assertion grant handler: " + ex);
+                Tracing.ErrorFormat("Unhandled exception in assertion grant handler: ", ex);
                 throw;
             }
 
@@ -145,7 +140,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2.Endpoints
             }
             catch (Exception ex)
             {
-                Tracing.Error("Resource owner credential validation failed: " + ex);
+                Tracing.ErrorFormat("Resource owner credential validation failed: ", ex);
                 throw;
             }
 

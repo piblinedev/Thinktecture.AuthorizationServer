@@ -12,11 +12,11 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api.Formatters
 {
     public class X509CertificateReferenceFormatter : BufferedMediaTypeFormatter
     {
-        string filename;
+        readonly string _filename;
         public X509CertificateReferenceFormatter(string filename)
         {
-            this.SupportedMediaTypes.Add(new System.Net.Http.Headers.MediaTypeHeaderValue("text/cer"));
-            this.filename = filename;
+            SupportedMediaTypes.Add(new System.Net.Http.Headers.MediaTypeHeaderValue("text/cer"));
+            _filename = filename;
         }
 
         public override bool CanReadType(Type type)
@@ -32,11 +32,13 @@ namespace Thinktecture.AuthorizationServer.WebHost.Areas.Admin.Api.Formatters
         public override void SetDefaultContentHeaders(Type type, System.Net.Http.Headers.HttpContentHeaders headers, System.Net.Http.Headers.MediaTypeHeaderValue mediaType)
         {
             base.SetDefaultContentHeaders(type, headers, mediaType);
-            headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment");
-            headers.ContentDisposition.FileName = this.filename + ".cer";
+            headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = _filename + ".cer"
+                };
         }
 
-        public override void WriteToStream(Type type, object value, System.IO.Stream writeStream, System.Net.Http.HttpContent content)
+        public override void WriteToStream(Type type, object value, Stream writeStream, System.Net.Http.HttpContent content)
         {
             var item = value as X509CertificateReference;
 

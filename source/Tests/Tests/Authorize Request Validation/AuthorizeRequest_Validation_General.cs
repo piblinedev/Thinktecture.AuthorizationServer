@@ -2,7 +2,6 @@
 using System.Web.Mvc;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.OAuth2;
-using Thinktecture.AuthorizationServer.OAuth2.Endpoints;
 
 namespace Thinktecture.AuthorizationServer.Test
 {

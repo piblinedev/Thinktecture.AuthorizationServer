@@ -19,9 +19,9 @@ namespace Thinktecture.AuthorizationServer.OAuth2
 {
     public class WSTrustResourceOwnerCredentialValidation : IResourceOwnerCredentialValidation
     {
-        readonly string _address;
-        readonly string _realm;
-        readonly string _issuerThumbprint;
+        string _address;
+        string _realm;
+        string _issuerThumbprint;
 
         public WSTrustResourceOwnerCredentialValidation(ICredentialAuthorizationResource credentialAuthorization)
         {
@@ -36,10 +36,9 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             var credentials = new ClientCredentials();
             credentials.UserName.UserName = userName;
             credentials.UserName.Password = password;
+
             GenericXmlSecurityToken genericToken;
 
-            Tracing.Start("ResourceOwner validation started");
-            Tracing.InformationFormat("ResourceOwner validation Address:{0} Realm:{1} Thumbprint:{2}", _address, _realm,_issuerThumbprint);
             try
             {
                 genericToken = WSTrustClient.Issue(
@@ -48,7 +47,6 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     binding,
                     credentials) as GenericXmlSecurityToken;
             }
-
             catch (MessageSecurityException ex)
             {
                 Tracing.Error("WSTrustResourceOwnerCredentialValidation failed: " + ex);
@@ -71,11 +69,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             var principal = new ClaimsPrincipal(handler.ValidateToken(token));
 
             Tracing.Information("Successfully requested token for user via WS-Trust");
-            Tracing.InformationFormat("Token received for user via WS-Trust {0}", token);
-            Tracing.Stop("ResourceOwner validation finished");
-            
-            return FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager
-                                       .Authenticate("ResourceOwnerPasswordValidation", principal);
+            return FederatedAuthentication.FederationConfiguration.IdentityConfiguration.ClaimsAuthenticationManager.Authenticate("ResourceOwnerPasswordValidation", principal);
         }
     }
 }

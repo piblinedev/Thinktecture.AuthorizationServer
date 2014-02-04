@@ -32,17 +32,18 @@ namespace Thinktecture.AuthorizationServer.Models
             get
             {
                 return new X509CertificatesFinder(
-                    Location, 
-                    StoreName, 
-                    FindType)
-                .Find(FindValue, false).SingleOrDefault();
+                    this.Location, 
+                    this.StoreName, 
+                    this.FindType)
+                .Find(this.FindValue, false).SingleOrDefault();
             }
         }
 
         public override SigningCredentials GetSigningCredentials()
         {
-            var cert = Certificate;
-            return cert == null ? null : new X509SigningCredentials(cert);
+            var cert = this.Certificate;
+            if (cert == null) return null;
+            return new X509SigningCredentials(cert);
         }
     }
 
@@ -55,18 +56,20 @@ namespace Thinktecture.AuthorizationServer.Models
         {
             if (value == null || value.Length == 0) throw new ArgumentNullException("value");
             
-            Value = DataProtectection.Instance.Protect(value);
+            this.Value = DataProtectection.Instance.Protect(value);
         }
 
         public byte[] GetValue()
         {
-            return Value == null ? null : DataProtectection.Instance.Unprotect(Value);
+            if (this.Value == null) return null;
+            return DataProtectection.Instance.Unprotect(this.Value);
         }
 
         public override SigningCredentials GetSigningCredentials()
         {
             var val = GetValue();
-            return val == null ? null : new HmacSigningCredentials(val);
+            if (val == null) return null;
+            return new HmacSigningCredentials(val);
         }
     }
 }

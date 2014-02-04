@@ -11,7 +11,7 @@ using System.Web.Mvc;
 using Thinktecture.AuthorizationServer.EF;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.OAuth2;
-using Thinktecture.AuthorizationServer.OAuth2.Endpoints;
+using Thinktecture.AuthorizationServer.WebHost.Security;
 
 namespace Thinktecture.AuthorizationServer.WebHost
 {
