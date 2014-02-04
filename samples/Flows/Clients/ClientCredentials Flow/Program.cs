@@ -25,7 +25,7 @@ namespace Thinktecture.Samples
             var client = new OAuth2Client(
                 new Uri(Constants.AS.OAuth2TokenEndpoint),
                 Constants.Clients.Client,
-                Constants.Clients.ClientSecret);
+                Constants.Clients.ClientSecret,new HttpClientHandler());
 
             var response = client.RequestClientCredentialsAsync("read").Result;
 
