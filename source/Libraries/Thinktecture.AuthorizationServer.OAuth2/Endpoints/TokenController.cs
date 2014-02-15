@@ -70,7 +70,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     return ProcessAssertionGrant(validatedRequest);
             }
 
-            Tracing.Error("invalid grant type: " + request.GrantType);
+            Tracing.Error("invalid grant type: " + request.Grant_Type);
             return Request.CreateOAuthErrorResponse(OAuthConstants.Errors.UnsupportedGrantType);
         }
 

@@ -45,7 +45,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                                       validatedRequest.Application.Namespace);
 
             // grant type is required
-            if (string.IsNullOrWhiteSpace(request.GrantType))
+            if (string.IsNullOrWhiteSpace(request.Grant_Type))
             {
                 throw new TokenRequestValidationException(
                     "Missing grant_type",
@@ -53,18 +53,18 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check supported grant types
-            if (request.GrantType == OAuthConstants.GrantTypes.AuthorizationCode ||
-                request.GrantType == OAuthConstants.GrantTypes.ClientCredentials ||
-                request.GrantType == OAuthConstants.GrantTypes.RefreshToken ||
-                request.GrantType == OAuthConstants.GrantTypes.Password)
+            if (request.Grant_Type == OAuthConstants.GrantTypes.AuthorizationCode ||
+                request.Grant_Type == OAuthConstants.GrantTypes.ClientCredentials ||
+                request.Grant_Type == OAuthConstants.GrantTypes.RefreshToken ||
+                request.Grant_Type == OAuthConstants.GrantTypes.Password)
             {
-                validatedRequest.GrantType = request.GrantType;
+                validatedRequest.GrantType = request.Grant_Type;
                 Tracing.Information("Grant type: " + validatedRequest.GrantType);
             }
             else if (!string.IsNullOrWhiteSpace(request.Assertion))
             {
                 validatedRequest.GrantType = OAuthConstants.GrantTypes.Assertion;
-                validatedRequest.AssertionType = request.GrantType;
+                validatedRequest.AssertionType = request.Grant_Type;
                 validatedRequest.Assertion = request.Assertion;
 
                 Tracing.Information("Grant type: " + validatedRequest.GrantType);
@@ -72,7 +72,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             else
             {
                 throw new TokenRequestValidationException(
-                    "Invalid grant_type: " + request.GrantType,
+                    "Invalid grant_type: " + request.Grant_Type,
                     OAuthConstants.Errors.UnsupportedGrantType);
             }
 
@@ -109,7 +109,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
                     break;
                 default:
                     throw new TokenRequestValidationException(
-                        "Invalid grant_type: " + request.GrantType,
+                        "Invalid grant_type: " + request.Grant_Type,
                         OAuthConstants.Errors.UnsupportedGrantType);
             }
 
@@ -144,14 +144,14 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check for refresh token
-            if (string.IsNullOrWhiteSpace(request.RefreshToken))
+            if (string.IsNullOrWhiteSpace(request.Refresh_Token))
             {
                 throw new TokenRequestValidationException(
                     "Missing refresh token",
                     OAuthConstants.Errors.InvalidGrant);
             }
 
-            validatedRequest.RefreshToken = request.RefreshToken;
+            validatedRequest.RefreshToken = request.Refresh_Token;
             Tracing.Information("Refresh token: " + validatedRequest.RefreshToken);
 
             // check for refresh token in datastore
@@ -264,7 +264,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // redirect URI is required
-            if (string.IsNullOrWhiteSpace(request.RedirectUri))
+            if (string.IsNullOrWhiteSpace(request.Redirect_Uri))
             {
                 throw new TokenRequestValidationException(
                     string.Format("Redirect URI is missing"),
@@ -272,7 +272,7 @@ namespace Thinktecture.AuthorizationServer.OAuth2
             }
 
             // check if redirect URI from authorize and token request match
-            if (!handle.RedirectUri.Equals(request.RedirectUri))
+            if (!handle.RedirectUri.Equals(request.Redirect_Uri))
             {
                 throw new TokenRequestValidationException(
                     string.Format(

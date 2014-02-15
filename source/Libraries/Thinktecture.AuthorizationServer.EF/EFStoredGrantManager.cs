@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Thinktecture.AuthorizationServer.Extensions;
 using Thinktecture.AuthorizationServer.Interfaces;
 using Thinktecture.AuthorizationServer.Models;
 
@@ -25,7 +26,7 @@ namespace Thinktecture.AuthorizationServer.EF
             db.SaveChanges();
         }
 
-        public Models.StoredGrant Get(string grantIdentifier)
+        public StoredGrant Get(string grantIdentifier)
         {
             return db.StoredGrants.Find(grantIdentifier);
         }
@@ -40,22 +41,14 @@ namespace Thinktecture.AuthorizationServer.EF
             }
         }
 
-        public Models.StoredGrant Find(string subject, Models.Client client, Models.Application application, IEnumerable<Scope> scopes, StoredGrantType type)
+        public StoredGrant Find(string subject, Client client, Application application, IEnumerable<Scope> scopes, StoredGrantType type)
         {
             var grants = db.StoredGrants.Where(h => h.Subject == subject &&
                                                              h.Client.ClientId == client.ClientId &&
                                                              h.Application.ID == application.ID &&
                                                              h.Type == type).ToList();
 
-            foreach (var grant in grants)
-            {
-                if (grant.Scopes.ScopeEquals(scopes))
-                {
-                    return grant;
-                }
-            }
-
-            return null;
+            return grants.FirstOrDefault(grant => grant.Scopes.ScopeEquals(scopes));
         }
     }
 }

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Thinktecture.AuthorizationServer.Models;
 
-namespace Thinktecture.AuthorizationServer.Models
+namespace Thinktecture.AuthorizationServer.Extensions
 {
     public static class StoredGrantExtensions
     {
